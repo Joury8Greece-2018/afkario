@@ -393,7 +393,490 @@ img { max-width: 100%; display: block; }
 
 </main>
 
-<!-- Placeholder — Part 2 و Part 3 هيتم إضافتهم هنا -->
+<!-- ============================================================
+     MODALS + BOTTOM NAV + STYLES — PART 2
+     ============================================================ -->
 
+<div class="modal" id="modal-detail">
+  <div class="modal-sheet">
+    <button class="modal-close" id="detail-close">✕</button>
+    <div id="detail-content"></div>
+  </div>
+</div>
+
+<div class="modal" id="modal-add">
+  <div class="modal-sheet">
+    <div class="modal-head">
+      <h2 id="wizard-title">💡 اكتب فكرتك</h2>
+      <button class="modal-close" id="wizard-close">✕</button>
+    </div>
+    <div id="wizard-body"></div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <button data-page="home" class="active">
+    <span class="ic">🏠</span>
+    <span>الرئيسية</span>
+  </button>
+  <button data-page="saved">
+    <span class="ic">⭐</span>
+    <span>المحفوظات</span>
+  </button>
+  <button data-page="me">
+    <span class="ic">👤</span>
+    <span>أنا</span>
+  </button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<style>
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 100;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+.modal.open { display: flex; }
+.modal-sheet {
+  background: var(--bg);
+  width: 100%;
+  max-width: 640px;
+  max-height: 92vh;
+  overflow-y: auto;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 20px 18px 30px;
+  animation: slideUp .25s ease;
+  position: relative;
+}
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+.modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--dark);
+  position: absolute;
+  top: 14px;
+  left: 14px;
+}
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  position: relative;
+}
+.modal-head h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--black);
+}
+.modal-head .modal-close { position: static; }
+
+.idea-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+.idea-card h3 {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+  color: var(--black);
+  font-weight: 800;
+  line-height: 1.4;
+}
+.idea-card .desc {
+  color: var(--dark);
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5;
+}
+.idea-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--bg-soft);
+  color: var(--dark);
+}
+.tag.need { background: #FFF3CD; color: #856404; }
+.tag.cat  { background: #D1FAE5; color: #065F46; }
+.tag.loc  { background: #EDE9FE; color: #5B21B6; }
+.tag.amount { background: #FEF3C7; color: #92400E; }
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+  z-index: 50;
+}
+.bottom-nav button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: var(--dark);
+  font-size: 0.7rem;
+  padding: 6px 4px;
+  font-weight: 700;
+}
+.bottom-nav button.active { color: var(--blue); }
+.bottom-nav .ic { font-size: 1.25rem; line-height: 1; }
+
+.toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--black);
+  color: var(--white);
+  padding: 12px 20px;
+  border-radius: 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 500;
+  opacity: 0;
+  transition: opacity .25s, transform .25s;
+  pointer-events: none;
+  max-width: 90vw;
+  text-align: center;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--dark);
+}
+.empty .big {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.detail-block {
+  background: var(--white);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border);
+}
+.detail-block h4 {
+  margin: 0 0 6px;
+  font-size: 0.9rem;
+  color: var(--dark);
+  font-weight: 800;
+}
+.detail-block p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--black);
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+.detail-hero {
+  text-align: center;
+  padding: 8px 0 20px;
+}
+.detail-hero h2 {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: var(--black);
+  margin: 0 0 10px;
+  line-height: 1.35;
+}
+.detail-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+.detail-actions .row { display: flex; gap: 8px; }
+.detail-actions .row .btn { flex: 1; }
+</style>
+
+<!-- PART 3 WILL BE ADDED HERE -->
+<!-- ============================================================
+     MODALS + BOTTOM NAV + STYLES — PART 2
+     ============================================================ -->
+
+<div class="modal" id="modal-detail">
+  <div class="modal-sheet">
+    <button class="modal-close" id="detail-close">✕</button>
+    <div id="detail-content"></div>
+  </div>
+</div>
+
+<div class="modal" id="modal-add">
+  <div class="modal-sheet">
+    <div class="modal-head">
+      <h2 id="wizard-title">💡 اكتب فكرتك</h2>
+      <button class="modal-close" id="wizard-close">✕</button>
+    </div>
+    <div id="wizard-body"></div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <button data-page="home" class="active">
+    <span class="ic">🏠</span>
+    <span>الرئيسية</span>
+  </button>
+  <button data-page="saved">
+    <span class="ic">⭐</span>
+    <span>المحفوظات</span>
+  </button>
+  <button data-page="me">
+    <span class="ic">👤</span>
+    <span>أنا</span>
+  </button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<style>
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 100;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+.modal.open { display: flex; }
+.modal-sheet {
+  background: var(--bg);
+  width: 100%;
+  max-width: 640px;
+  max-height: 92vh;
+  overflow-y: auto;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 20px 18px 30px;
+  animation: slideUp .25s ease;
+  position: relative;
+}
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+.modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--dark);
+  position: absolute;
+  top: 14px;
+  left: 14px;
+}
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  position: relative;
+}
+.modal-head h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--black);
+}
+.modal-head .modal-close { position: static; }
+
+.idea-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+.idea-card h3 {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+  color: var(--black);
+  font-weight: 800;
+  line-height: 1.4;
+}
+.idea-card .desc {
+  color: var(--dark);
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5;
+}
+.idea-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--bg-soft);
+  color: var(--dark);
+}
+.tag.need { background: #FFF3CD; color: #856404; }
+.tag.cat  { background: #D1FAE5; color: #065F46; }
+.tag.loc  { background: #EDE9FE; color: #5B21B6; }
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+  z-index: 50;
+}
+.bottom-nav button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: var(--dark);
+  font-size: 0.7rem;
+  padding: 6px 4px;
+  font-weight: 700;
+}
+.bottom-nav button.active { color: var(--blue); }
+.bottom-nav .ic { font-size: 1.25rem; line-height: 1; }
+
+.toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--black);
+  color: var(--white);
+  padding: 12px 20px;
+  border-radius: 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 500;
+  opacity: 0;
+  transition: opacity .25s, transform .25s;
+  pointer-events: none;
+  max-width: 90vw;
+  text-align: center;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--dark);
+}
+.empty .big {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.detail-block {
+  background: var(--white);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border);
+}
+.detail-block h4 {
+  margin: 0 0 6px;
+  font-size: 0.9rem;
+  color: var(--dark);
+  font-weight: 800;
+}
+.detail-block p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--black);
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+.detail-hero {
+  text-align: center;
+  padding: 8px 0 20px;
+}
+.detail-hero h2 {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: var(--black);
+  margin: 0 0 10px;
+  line-height: 1.35;
+}
+.detail-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+.detail-actions .row { display: flex; gap: 8px; }
+.detail-actions .row .btn { flex: 1; }
+</style>
 </body>
 </html>
