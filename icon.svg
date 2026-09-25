@@ -1,0 +1,214 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 512 512"
+     width="512"
+     height="512">
+
+  <!-- Outer frame -->
+  <rect x="48" y="48"
+        width="416"
+        height="416"
+        rx="105"
+        fill="none"
+        stroke="#FBBC04"
+        stroke-width="38"/>
+
+  <path d="M255 67
+           H359
+           C416 67 445 100 445 145
+           V205"
+        fill="none"
+        stroke="#4285F4"
+        stroke-width="38"
+        stroke-linecap="round"/>
+
+  <path d="M445 205
+           V305"
+        fill="none"
+        stroke="#FF4FCB"
+        stroke-width="38"
+        stroke-linecap="butt"/>
+
+  <path d="M445 305
+           V360
+           C445 416 414 445 360 445
+           H255"
+        fill="none"
+        stroke="#FF6D00"
+        stroke-width="38"
+        stroke-linecap="round"/>
+
+  <path d="M255 445
+           H153
+           C99 445 67 414 67 360
+           V255"
+        fill="none"
+        stroke="#CBD5E1"
+        stroke-width="38"
+        stroke-linecap="round"/>
+
+  <rect x="86" y="86"
+        width="340"
+        height="340"
+        rx="75"
+        fill="#FFFFFF"/>
+
+  <!-- Thought cloud -->
+  <path d="
+    M175 178
+    C158 168 157 143 174 131
+    C181 112 202 103 220 111
+    C237 91 270 94 282 116
+    C306 107 329 121 331 145
+    C348 154 349 180 334 193
+    C326 214 302 220 284 211
+    C267 226 239 224 226 207
+    C204 215 180 202 175 178 Z"
+    fill="#FFFFFF"
+    stroke="#CBD5E1"
+    stroke-width="6"/>
+
+  <circle cx="293" cy="226"
+          r="11"
+          fill="#CBD5E1"/>
+
+  <circle cx="276" cy="245"
+          r="7"
+          fill="#CBD5E1"/>
+
+  <!-- Hand -->
+  <g transform="translate(255 158) scale(.58)"
+     fill="none"
+     stroke="#4285F4"
+     stroke-width="9"
+     stroke-linecap="round"
+     stroke-linejoin="round">
+
+    <path d="
+      M-10 50
+      C-27 42 -34 25 -27 8
+      L-12 -28
+      C-8 -39 6 -37 7 -25
+      L7 5
+      L16 -48
+      C18 -61 34 -59 35 -46
+      L34 2
+      L45 -35
+      C49 -47 63 -43 63 -31
+      L57 15
+      L67 -8
+      C73 -20 86 -14 83 -2
+      L70 40
+      C65 61 48 74 27 76
+      Z"/>
+
+    <path d="
+      M-27 8
+      C-48 2 -57 13 -50 26
+      C-44 37 -31 44 -10 50"/>
+  </g>
+
+  <!-- Accents -->
+  <path d="M226 181 L238 174"
+        stroke="#FBBC04"
+        stroke-width="7"
+        stroke-linecap="round"/>
+
+  <path d="M286 164 L299 159"
+        stroke="#FF6D00"
+        stroke-width="7"
+        stroke-linecap="round"/>
+
+  <!-- Head -->
+  <path d="
+    M203 288
+    C203 251 229 228 265 228
+    C305 228 328 256 328 292
+    C328 326 305 351 269 351
+    C231 351 203 326 203 288 Z"
+    fill="#FFFFFF"
+    stroke="#4B5563"
+    stroke-width="7"/>
+
+  <!-- Hair -->
+  <path d="
+    M207 274
+    C203 245 226 218 255 215
+    C276 205 307 219 320 244
+    C309 236 298 238 289 244
+    C280 225 262 232 251 241
+    C239 233 220 244 214 259
+    Z"
+    fill="#4B5563"/>
+
+  <path d="M244 284
+           C237 294 238 306 248 311"
+        fill="none"
+        stroke="#4B5563"
+        stroke-width="6"
+        stroke-linecap="round"/>
+
+  <path d="M269 278
+           C275 283 282 283 288 278"
+        fill="none"
+        stroke="#4B5563"
+        stroke-width="6"
+        stroke-linecap="round"/>
+
+  <path d="M270 310
+           C280 316 291 316 301 309"
+        fill="none"
+        stroke="#4B5563"
+        stroke-width="6"
+        stroke-linecap="round"/>
+
+  <path d="M258 342 V369"
+        stroke="#4B5563"
+        stroke-width="8"
+        stroke-linecap="round"/>
+
+  <path d="
+    M258 360
+    C228 361 203 371 181 392
+    L174 426
+    H344
+    L337 393
+    C317 374 292 363 270 360
+    Z"
+    fill="#4285F4"/>
+
+  <!-- Cup -->
+  <path d="
+    M173 319
+    H225
+    V347
+    C225 359 216 366 199 366
+    C182 366 173 359 173 347 Z"
+    fill="#FFFFFF"
+    stroke="#4B5563"
+    stroke-width="6"/>
+
+  <path d="
+    M225 326
+    C248 320 250 350 226 350"
+    fill="none"
+    stroke="#4B5563"
+    stroke-width="6"/>
+
+  <!-- Steam -->
+  <path d="
+    M188 306
+    C180 296 195 290 187 278"
+    fill="none"
+    stroke="#FBBC04"
+    stroke-width="6"
+    stroke-linecap="round"/>
+
+  <path d="
+    M207 306
+    C199 296 214 290 206 278"
+    fill="none"
+    stroke="#FF6D00"
+    stroke-width="6"
+    stroke-linecap="round"/>
+
+</svg>
