@@ -880,3 +880,403 @@ img { max-width: 100%; display: block; }
 </style>
 </body>
 </html>
+<script>
+/* ============================================================
+   AFKARIO - JavaScript
+   ============================================================ */
+
+const CATEGORIES = [
+  { id: 'food',        label: '🍔 أكل ومطاعم' },
+  { id: 'fashion',     label: '💄 جمال وموضة' },
+  { id: 'sports',      label: '🏋️ رياضة ولياقة' },
+  { id: 'trade',       label: '🛍️ تجارة' },
+  { id: 'realestate',  label: '🏠 عقارات' },
+  { id: 'tech',        label: '💻 تكنولوجيا' },
+  { id: 'transport',   label: '🚗 مواصلات' },
+  { id: 'tourism',     label: '✈️ سياحة' },
+  { id: 'education',   label: '🎓 تعليم' },
+  { id: 'agriculture', label: '🌱 زراعة' },
+  { id: 'industry',    label: '🏭 تصنيع' },
+  { id: 'services',    label: '🧑‍🔧 خدمات' },
+  { id: 'creative',    label: '🎨 إبداع وفنون' },
+  { id: 'media',       label: '📱 محتوى وإعلام' },
+  { id: 'women',       label: '💖 أعمال السيدات' },
+  { id: 'other',       label: 'أخرى' }
+];
+
+const NEEDS = [
+  { id: 'funding',            label: '💰 تمويل' },
+  { id: 'partner',            label: '🤝 شريك' },
+  { id: 'funding_or_partner', label: '💰🤝 تمويل أو شريك' },
+  { id: 'help',               label: '👥 حد يساعدني' },
+  { id: 'show_only',          label: '📣 عايز أعرض الفكرة فقط' }
+];
+
+const GOVERNORATES = [
+  'القاهرة','الجيزة','الإسكندرية','الدقهلية','الشرقية','المنوفية','القليوبية',
+  'البحيرة','الغربية','بورسعيد','دمياط','الإسماعيلية','السويس','كفر الشيخ',
+  'الفيوم','بني سويف','المنيا','أسيوط','سوهاج','قنا','الأقصر','أسوان',
+  'البحر الأحمر','الوادي الجديد','مطروح','شمال سيناء','جنوب سيناء'
+];
+
+const $  = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const uid = () => 'id_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function toast(msg) {
+  const t = $('#toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function labelOf(list, id) {
+  const item = list.find(x => x.id === id);
+  return item ? item.label : (id || '—');
+}
+function needLabel(id) { return labelOf(NEEDS, id); }
+function catLabel(id)  { return labelOf(CATEGORIES, id); }
+
+function waLink(number, msg) {
+  const n = String(number || '').replace(/\D/g, '');
+  return 'https://wa.me/' + n + '?text=' + encodeURIComponent(msg || '');
+}
+
+const LS = {
+  ideas:    'afkario_ideas',
+  saved:    'afkario_saved',
+  khaterat: 'afkario_khaterat',
+  me:       'afkario_me'
+};
+
+function getIdeas() {
+  try { return JSON.parse(localStorage.getItem(LS.ideas)) || []; } catch { return []; }
+}
+function saveIdeas(arr) { localStorage.setItem(LS.ideas, JSON.stringify(arr)); }
+function getSaved() {
+  try { return JSON.parse(localStorage.getItem(LS.saved)) || []; } catch { return []; }
+}
+function toggleSaved(id) {
+  const s = getSaved();
+  const i = s.indexOf(id);
+  if (i === -1) s.push(id); else s.splice(i, 1);
+  localStorage.setItem(LS.saved, JSON.stringify(s));
+  return i === -1;
+}
+function isSaved(id) { return getSaved().includes(id); }
+function getKhaterat() {
+  try { return JSON.parse(localStorage.getItem(LS.khaterat)) || []; } catch { return []; }
+}
+function getLatestKhatera() {
+  const all = getKhaterat().filter(k => k.published);
+  if (!all.length) return null;
+  return all.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+}
+function getMe() {
+  try { return JSON.parse(localStorage.getItem(LS.me)) || null; } catch { return null; }
+}
+function saveMe(me) { localStorage.setItem(LS.me, JSON.stringify(me)); }
+
+function seedDemo() {
+  if (getIdeas().length > 0) return;
+  const now = Date.now();
+  const demo = [
+    { id: uid(), title: 'صالون رجالي متنقل', desc: 'صالون رجالي بييجي لحد البيت أو الشغل.', type: 'idea', need: 'funding', category: 'services', governorate: 'القاهرة', city: 'مدينة نصر', amount: 50000, whatsapp: '201000000001', showWhatsapp: true, author: 'أحمد', fullDesc: 'الفكرة إن الشباب مشغول ومش فاضي يقعد في صالون. عايز عربية مجهزة تروح للعميل.', status: 'published', createdAt: now - 1*864e5 },
+    { id: uid(), title: 'مطعم فول وطعمية بلمسة جديدة', desc: 'فول وطعمية بشكل عصري ونظيف.', type: 'project', need: 'partner', category: 'food', governorate: 'الجيزة', city: 'فيصل', amount: null, whatsapp: '201000000002', showWhatsapp: true, author: 'منى', fullDesc: 'المطعم هيقدم الفول والطعمية بتقديم حديث وتغليف يليق.', status: 'published', createdAt: now - 2*864e5 },
+    { id: uid(), title: 'جيم صغير للنساء', desc: 'جيم مخصص للنساء فقط، بمدربات، وبيئة آمنة.', type: 'idea', need: 'funding', category: 'women', governorate: 'الإسكندرية', city: 'سموحة', amount: 120000, whatsapp: '201000000003', showWhatsapp: true, author: 'سارة', fullDesc: 'كتير من البنات عايزة تتمرن لكن مش مرتاحة في الجيمات المختلطة.', status: 'published', createdAt: now - 3*864e5 },
+    { id: uid(), title: 'متجر ملابس أونلاين', desc: 'متجر ملابس شبابية بتصاميم مصرية.', type: 'idea_and_project', need: 'funding_or_partner', category: 'fashion', governorate: 'القاهرة', city: 'المعادي', amount: 80000, whatsapp: '201000000004', showWhatsapp: false, author: 'هدى', fullDesc: 'متجر أونلاين لملابس شبابية بتصاميم مصرية أصيلة.', status: 'published', createdAt: now - 4*864e5 },
+    { id: uid(), title: 'تطبيق حجز مواعيد الدكتور', desc: 'تطبيق بسيط يحجز مواعيد الدكتور.', type: 'idea', need: 'partner', category: 'tech', governorate: 'القاهرة', city: 'التجمع الخامس', amount: null, whatsapp: '201000000005', showWhatsapp: true, author: 'محمود', fullDesc: 'تطبيق يجمع دكاترة ويسمح للمريض بحجز موعد فوراً.', status: 'published', createdAt: now - 5*864e5 },
+    { id: uid(), title: 'مشروع زراعة أسطح', desc: 'استغلال أسطح المباني في زراعة خضروات.', type: 'idea', need: 'help', category: 'agriculture', governorate: 'القاهرة', city: 'شبرا', amount: null, whatsapp: '201000000006', showWhatsapp: true, author: 'كريم', fullDesc: 'استغلال أسطح العمارات في زراعة خضروات عضوية وبيعها.', status: 'published', createdAt: now - 6*864e5 },
+    { id: uid(), title: 'رحلات سياحية داخلية', desc: 'رحلات سياحية للشباب داخل مصر.', type: 'project', need: 'funding', category: 'tourism', governorate: 'الأقصر', city: 'الأقصر', amount: 60000, whatsapp: '201000000007', showWhatsapp: true, author: 'ياسمين', fullDesc: 'تنظيم رحلات سياحية للشباب بأسعار في متناول الجميع.', status: 'published', createdAt: now - 7*864e5 },
+    { id: uid(), title: 'خدمة تنظيف منازل', desc: 'شركة تنظيف بفريق مدرب ومنتجات آمنة.', type: 'project', need: 'funding_or_partner', category: 'services', governorate: 'القاهرة', city: 'مصر الجديدة', amount: 40000, whatsapp: '201000000008', showWhatsapp: false, author: 'نهى', fullDesc: 'شركة تنظيف بفريق مدرب ومنتجات آمنة على الأطفال.', status: 'published', createdAt: now - 8*864e5 }
+  ];
+  saveIdeas(demo);
+  localStorage.setItem(LS.khaterat, JSON.stringify([
+    { id: uid(), text: 'مش لازم فكرتك تكون عبقرية… المهم إنها موجودة.', date: new Date(now - 864e5).toISOString(), published: true },
+    { id: uid(), text: 'واحد + واحد = ممكن مليون.', date: new Date(now - 2*864e5).toISOString(), published: true }
+  ]));
+}
+
+const filters = { q: '', need: '', cat: '' };
+
+function renderStats() {
+  const ideas = getIdeas();
+  const today = new Date().toDateString();
+  const todayCount = ideas.filter(i => new Date(i.createdAt).toDateString() === today).length;
+  $('#stat-total').textContent = ideas.length;
+  $('#stat-today').textContent = todayCount;
+  $('#stat-users').textContent = ideas.length;
+}
+
+function renderKhatera() {
+  const k = getLatestKhatera();
+  const box = $('#khatera-box');
+  if (!k) { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  $('#khatera-text').textContent = k.text;
+}
+
+function renderChips() {
+  $('#filter-need').innerHTML = '<button class="chip active" data-need="">الكل</button>' +
+    NEEDS.map(n => `<button class="chip" data-need="${n.id}">${n.label}</button>`).join('');
+  $('#filter-cat').innerHTML = '<button class="chip active" data-cat="">الكل</button>' +
+    CATEGORIES.map(c => `<button class="chip" data-cat="${c.id}">${c.label}</button>`).join('');
+}
+
+function ideaCardHtml(idea) {
+  return '<div class="idea-card" data-id="' + idea.id + '">' +
+    '<.lengthh3>' +) escapeHtml(idea.title {
+) + '</h3>'    +
+    '<p class="desc"> box' + escapeHtml.innerHTML(idea.desc) + '</p>' +
+    '<div class="idea-meta">' +
+      '<span class="tag need">' + needLabel(idea.need) + '</span>' +
+      '<span class="tag cat">' + catLabel(idea.category) + '</span>' +
+      '<span class="tag loc">📍 ' + escapeHtml(idea.governorate) + '</span>' +
+      (idea.amount ? '<span class="tag amount">💰 ' + idea.amount.toLocaleString('ar-EG') + ' ج</span>' : '') +
+    '</div></div>';
+}
+
+function renderIdeas() {
+  const all = getIdeas().filter(i => i.status === 'published').sort((a, b) => b.createdAt - a.createdAt);
+  const list = all.filter(i => {
+    if (filters.q) {
+      const q = filters.q.toLowerCase();
+      const hay = (i.title + ' ' + i.desc + ' ' + (i.fullDesc || '')).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    if (filters.need && i.need !== filters.need) return false;
+    if (filters.cat  && i.category !== filters.cat)  return false;
+    return true;
+  });
+  const box = $('#ideas-list');
+  if (!list = '<div class="empty"><span class="big">☕</span>مفيش أفكار مطابقة</div>';
+    return;
+  }
+  box.innerHTML = list.map(ideaCardHtml).join('');
+}
+
+function renderAll() { renderStats(); renderKhatera(); renderChips(); renderIdeas(); }
+
+function openDetail(id) {
+  const idea = getIdeas().find(i => i.id === id);
+  if (!idea) return;
+  const saved = isSaved(id);
+  const waNum = idea.showWhatsapp && idea.whatsapp ? idea.whatsapp : null;
+  const waMsg = 'أهلاً، شوفت فكرتك على مقهى الأفكار وعايز أعرف عنها أكتر.';
+
+  let html = '<div class="detail-hero"><h2>' + escapeHtml(idea.title) + '</h2>';
+  html += '<div class="idea-meta" style="justify-content:center">';
+  html += '<span class="tag need">' + needLabel(idea.need) + '</span>';
+  html += '<span class="tag cat">' + catLabel(idea.category) + '</span>';
+  html += '<span class="tag loc">📍 ' + escapeHtml(idea.governorate) + '</span>';
+  if (idea.amount) html += '<span class="tag amount">💰 ' + idea.amount.toLocaleString('ar-EG') + ' ج</span>';
+  html += '</div></div>';
+  html += '<div class="detail-block"><h4>الوصف</h4><p>' + escapeHtml(idea.fullDesc || idea.desc) + '</p></div>';
+  if (idea.author) html += '<div class="detail-block"><h4>صاحب الفكرة</h4><p>' + escapeHtml(idea.author) + '</p></div>';
+  html += '<div class="detail-actions">';
+  if (waNum) html += '<a class="btn btn-primary btn-block" href="' + waLink(waNum, waMsg) + '" target="_blank">📲 تواصل على واتساب</a>';
+  html += '<button class="btn btn-secondary btn-block" id="detail-share">📤 شارك الفكرة</button>';
+  html += '<div class="row">';
+  html += '<button class="btn btn-secondary" id="detail-save">' + (saved ? '⭐ محفوظة' : '⭐ احفظ') + '</button>';
+  html += '<button class="btn btn-secondary" id="detail-copy">🔗 نسخ الرابط</button>';
+  html += '</div></div>';
+
+  $('#detail-content').innerHTML = html;
+  $('#modal-detail').classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  $('#detail-close').onclick = closeDetail;
+  $('#detail-save').onclick = () => {
+    const isNow = toggleSaved(id);
+    $('#detail-save').textContent = isNow ? '⭐ محفوظة' : '⭐ احفظ';
+    toast(isNow ? '⭐ اتحفظت' : 'اتشالت');
+  };
+  $('#detail-copy').onclick = async () => {
+    const url = location.origin + location.pathname + '#idea=' + id;
+    try { await navigator.clipboard.writeText(url); toast('🔗 اتنسخ'); } catch { prompt('انسخ:', url); }
+  };
+  $('#detail-share').onclick = async () => {
+    const url = location.origin + location.pathname + '#idea=' + id;
+    const text = '💡 شوف الفكرة دي على مقهى الأفكار\n' + url;
+    if (navigator.share) { try { await navigator.share({ title: idea.title, text, url }); } catch {} }
+    else { window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank'); }
+  };
+}
+
+function closeDetail() {
+  $('#modal-detail').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function openAdd() {
+  let html = '<div class="section-title">احكي لنا فكرتك بطريقتك</div>';
+  html += '<p style="color:var(--dark);font-size:.9rem;margin:0 0 16px">مش لازم تكون خبير. اكتب اللي في دماغك.</p>';
+  html += '<div style="margin-bottom:14px"><label style="font-weight:700;display:block;margin-bottom:6px">عنوان الفكرة</label><input id="w-title" type="text" placeholder="مثال: مطعم فول بلمسة عصرية" style="width:100%;padding:13px;border-radius:12px;border:1.5px solid var(--border)"></div>';
+  html += '<div style="margin-bottom:14px"><label style="font-weight:700;display:block;margin-bottom:6px">الوصف</label><textarea id="w-desc" rows="4" placeholder="اكتب كل حاجة عن فكرتك..." style="width:100%;padding:13px;border-radius:12px;border:1.5px solid var(--border);font-family:inherit"></textarea></div>';
+  html += '<div style="margin-bottom:14px"><label style="font-weight:700;display:block;margin-bottom:6px">الاحتياج</label><select id="w-need" style="width:100%;padding:13px;border-radius:12px;border:1.5px solid var(--border)">';
+  NEEDS.forEach(n => { html += '<option value="' + n.id + '">' + n.label + '</option>'; });
+  html += '</select></div>';
+  html += '<div style="margin-bottom:14px"><label style="font-weight:700;display:block;margin-bottom:6px">التصنيف</label><select id="w-cat" style="width:100%;padding:13px;border-radius:12px;border:1.5px solid var(--border)">';
+  CATEGORIES.forEach(c => { html += '<option value="' + c.id + '">' + c.label + '</option>'; });
+  html += '</select></div>';
+  html += '<div style="margin-bottom:14px"><label style="font-weight:700;display:block;margin-bottom:6px">المحافظة</label><select id="w-gov" style="width:100%;padding:13px;border-radius:12px;border:1.5px solid var(--border)">';
+  GOVERNORATES.forEach(g => { html += '<option value="' + g + '">' + g + '</option>'; });
+  html += '</select></div>';
+  html += '<div style="margin-bottom:14px"><label style="font-weight:700;display:block;margin-bottom:6px">المدينة</label><input id="w-city" type="text" placeholder="مثال: مدينة نصر" style="width:100%;padding:13px;border-radius:12px;border:1.5px solid var(--border)"></div>';
+  html += '<div style="margin-bottom:14px"><label style="font-weight:700;display:block;margin-bottom:6px">المبلغ المطلوب (اختياري)</label><input id="w-amount" type="number" placeholder="مثال: 50000" style="width:100%;padding:13px;border-radius:12px;border:1.5px solid var(--border)"></div>';
+  html += '<div style="margin-bottom:14px"><label style="font-weight:700;display:block;margin-bottom:6px">اسمك</label><input id="w-author" type="text" placeholder="اكتب اسمك" style="width:100%;padding:13px;border-radius:12px;border:1.5px solid var(--border)"></div>';
+  html += '<div style="margin-bottom:14px"><label style="font-weight:700;display:block;margin-bottom:6px">رقم واتساب (اختياري)</label><input id="w-wa" type="tel" placeholder="201xxxxxxxxx" style="width:100%;padding:13px;border-radius:12px;border:1.5px solid var(--border)"></div>';
+  html += '<div style="margin-bottom:20px"><label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:.9rem"><input id="w-show-wa" type="checkbox" style="width:auto"> موافق على عرض الرقم للعامة</label></div>';
+  html += '<div style="background:linear-gradient(135deg,#FFF8E1,#FFECB3);border-radius:14px;padding:16px;margin-bottom:16px;text-align:center"><div style="font-size:.85rem;font-weight:800;color:var(--orange);margin-bottom:4px">⚠️ الدفع التجريبي</div><div style="font-size:2rem;font-weight:900;color:var(--black)">9<span style="font-size:1rem"> جنيه</span></div></div>';
+  html += '<button class="btn btn-primary btn-block" id="w-submit">✅ انشر فكرتك بـ9 جنيه</button>';
+
+  $('#wizard-body').innerHTML = html;
+  $('#modal-add').classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  $('#wizard-close').onclick = closeAdd;
+  $('#w-submit').onclick = () => {
+    const title = $('#w-title').value.trim();
+    const desc = $('#w-desc').value.trim();
+    const author = $('#w-author').value.trim() || 'مجهول';
+    if (title.length < 4) return toast('اكتب عنوان أوضح');
+    if (desc.length < 15) return toast('اكتب وصف أطول');
+    const ideas = getIdeas();
+    ideas.unshift({
+      id: uid(), title, desc, fullDesc: desc,
+      need: $('#w-need').value, category: $('#w-cat').value,
+      governorate: $('#w-gov').value, city: $('#w-city').value.trim(),
+      amount: $('#w-amount').value ? Number($('#w-amount').value) : null,
+      author, whatsapp: $('#w-wa').value.trim(),
+      showWhatsapp: $('#w-show-wa').checked,
+      status: 'published', createdAt: Date.now()
+    });
+    saveIdeas(ideas);
+    saveMe({ author, whatsapp: $('#w-wa').value.trim() });
+    closeAdd();
+    renderAll();
+    toast('🎉 فكرتك وصلت للقهوة!');
+  };
+}
+
+function closeAdd() {
+  $('#modal-add').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function showSaved() {
+  const saved = getSaved();
+  const ideas = getIdeas().filter(i => saved.includes(i.id));
+  const title = document.querySelector('.section-title');
+  if (title) title.textContent = '⭐ المحفوظات';
+  const box = $('#ideas-list');
+  if (!ideas.length) {
+    box.innerHTML = '<div class="empty"><span class="big">⭐</span>مفيش أفكار محفوظة</div>';
+    return;
+  }
+  box.innerHTML = ideas.map(ideaCardHtml).join('');
+  window.scrollTo({ top: 400, behavior: 'smooth' });
+}
+
+function showMe() {
+  const me = getMe();
+  const title = document.querySelector('.section-title');
+  if (title) title.textContent = '👤 أنا';
+  const box = $('#ideas-list');
+  if (!me) {
+    box.innerHTML = '<div class="empty"><span class="big">👤</span>لسه مفيش حساب. اكتب فكرة الأول.</div>';
+    return;
+  }
+  const mine = getIdeas().filter(i => i.author === me.author);
+  let html = '<div class="detail-block"><h4>الاسم</h4><p>' + escapeHtml(me.author) + '</p></div>';
+  if (me.whatsapp) html += '<div class="detail-block"><h4>واتساب</h4><p>' + escapeHtml(me.whatsapp) + '</p></div>';
+  html += '<div class="section-title" style="margin-top:20px">📝 أفكاري (' + mine.length + ')</div>';
+  html += mine.map(ideaCardHtml).join('');
+  box.innerHTML = html;
+  window.scrollTo({ top: 400, behavior: 'smooth' });
+}
+
+function init() {
+  seedDemo();
+  renderAll();
+
+  $('#btn-add').onclick = openAdd;
+  $('#btn-search').onclick = () => {
+    $('#search-input').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => $('#search-input').focus(), 400);
+  };
+
+  $('#search-input').addEventListener('input', (e) => {
+    filters.q = e.target.value.trim();
+    renderIdeas();
+  });
+
+  $('#toggle-filters').onclick = () => {
+    const f = $('#filters');
+    f.classList.toggle('open');
+    $('#toggle-filters').textContent = f.classList.contains('open') ? 'إخفاء' : 'عرض';
+  };
+
+  document.addEventListener('click', (e) => {
+    const chip = e.target.closest('.chip');
+    if (!chip) return;
+    if (chip.dataset.need !== undefined) {
+      $$('#filter-need .chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      filters.need = chip.dataset.need;
+      renderIdeas();
+    }
+    if (chip.dataset.cat !== undefined) {
+      $$('#filter-cat .chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      filters.cat = chip.dataset.cat;
+      renderIdeas();
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    const card = e.target.closest('.idea-card');
+    if (card && !e.target.closest('.btn')) openDetail(card.dataset.id);
+  });
+
+  $('#detail-close').onclick = closeDetail;
+  $('#modal-detail').addEventListener('click', (e) => {
+    if (e.target.id === 'modal-detail') closeDetail();
+  });
+  $('#modal-add').addEventListener('click', (e) => {
+    if (e.target.id === 'modal-add') closeAdd();
+  });
+
+  $$('.bottom-nav button').forEach(b => {
+    b.onclick = () => {
+      if (b.dataset.page === 'home') window.scrollTo({ top: 0, behavior: 'smooth' });
+      else if (b.dataset.page === 'saved') showSaved();
+      else if (b.dataset.page === 'me') showMe();
+      $$('.bottom-nav button').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+    };
+  });
+
+  if (location.hash.startsWith('#idea=')) {
+    const id = location.hash.slice(6);
+    setTimeout(() => openDetail(id), 300);
+  }
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
