@@ -1,0 +1,21 @@
+{
+  "name": "مقهى الأفكار",
+  "short_name": "afkario",
+  "description": "مقهى الأفكار - واحد + واحد = مليون",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFFFFF",
+  "theme_color": "#4285F4",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
