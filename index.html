@@ -1248,7 +1248,7 @@ function init() {
     if (card && !e.target.closest('.btn')) openDetail(card.dataset.id);
   });
 
-  $('#detail-close').onclick = closeDetail;
+  
   $('#modal-detail').addEventListener('click', (e) => {
     if (e.target.id === 'modal-detail') closeDetail();
   });
