@@ -952,25 +952,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }, 100);
 });
+  }
+
+// ========== دالة حفظ الفكرة ==========
+function handleSave(id) {
+  const isNowSaved = toggleSave(id);
+  toast(isNowSaved ? '⭐ اتحفظت للقعدة الجاية' : 'اتشالت من المحفوظات');
+  closeDetail();
+}
 </script>
-
-// ========== دالة حفظ الفكرة ==========
-function handleSave(id) {
-  const isNowSaved = toggleSave(id);
-  toast(isNowSaved ? '⭐ اتحفظت للقعدة الجاية' : 'اتشالت من المحفوظات');
-  closeDetail();
-}
-
-// ========== دالة حفظ الفكرة ==========
-function handleSave(id) {
-  const isNowSaved = toggleSave(id);
-  toast(isNowSaved ? '⭐ اتحفظت للقعدة الجاية' : 'اتشالت من المحفوظات');
-  closeDetail();
-}
-
-// ========== دالة حفظ الفكرة ==========
-function handleSave(id) {
-  const isNowSaved = toggleSave(id);
-  toast(isNowSaved ? '⭐ اتحفظت للقعدة الجاية' : 'اتشالت من المحفوظات');
-  closeDetail();
-}
