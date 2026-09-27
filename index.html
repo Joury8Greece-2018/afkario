@@ -524,7 +524,10 @@ function renderIdeas() {
 function init() {
   renderStats();
   renderIdeas();
-
+const searchBtn = document.getElementById('btn-search');
+  if (searchBtn) searchBtn.onclick = () => {
+    toast('البحث هيتفعّل قريب 🔎');
+  };
 
   document.addEventListener('click', (e) => {
     const card = e.target.closest('.idea-card');
