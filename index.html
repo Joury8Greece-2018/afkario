@@ -306,5 +306,88 @@
   </button>
 </nav>
 
-</body>
+<!-- عنوان الأفكار -->
+<div class="section-head">
+  <h2>📋 الأفكار اللي وصلت</h2>
+</div>
+
+<!-- شبكة الأفكار -->
+<div id="ideas-grid" class="ideas-grid"></div>
+
+<style>
+  .ideas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+  .idea-card { background: var(--white); border-radius: 14px; padding: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); cursor: pointer; }
+  .idea-card:active { transform: scale(.98); }
+  .idea-card h3 { margin: 0 0 6px; font-size: 0.95rem; font-weight: 800; color: var(--text); line-height: 1.35; }
+  .idea-card .desc { font-size: 0.78rem; color: var(--text-mid); margin: 0 0 10px; line-height: 1.4; min-height: 2.2em; }
+  .idea-card .meta { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+  .idea-card .tag { font-size: 0.68rem; font-weight: 700; padding: 3px 8px; border-radius: 10px; }
+  .tag-need { background: #FFF3CD; color: #856404; }
+  .tag-loc { background: #EDE9FE; color: #5B21B6; }
+  .idea-card .social { display: flex; gap: 8px; font-size: 0.72rem; color: var(--text-soft); font-weight: 600; padding-top: 8px; border-top: 1px solid var(--border); }
+  .section-head { display: flex; justify-content: space-between; margin: 24px 0 12px; }
+  .section-head h2 { font-size: 1.05rem; font-weight: 800; color: var(--text); margin: 0; }
+  .empty { text-align: center; padding: 40px 20px; color: var(--text-mid); }
+  .empty .big { font-size: 2.5rem; display: block; margin-bottom: 10px; }
+</style>
+
+<script>
+const DEMO_IDEAS = [
+  { id: 'demo_1', title: 'صالون رجالي متنقل', desc: 'صالون رجالي بييجي لحد البيت أو الشغل.', author: 'أحمد', needLabel: '💰 تمويل', governorate: 'القاهرة', views: 250, saves: 40, shares: 12, createdAt: Date.now() - (1*24*60*60*1000), status: 'published' },
+  { id: 'demo_2', title: 'مطعم فول وطعمية بلمسة جديدة', desc: 'فول وطعمية بس بشكل عصري ونظيف.', author: 'منى', needLabel: '🤝 شريك', governorate: 'الجيزة', views: 180, saves: 32, shares: 8, createdAt: Date.now() - (2*24*60*60*1000), status: 'published' },
+  { id: 'demo_3', title: 'جيم صغير للنساء', desc: 'جيم مخصص للنساء فقط، بمدربات.', author: 'سارة', needLabel: '💰 تمويل', governorate: 'الإسكندرية', views: 320, saves: 65, shares: 22, createdAt: Date.now() - (3*24*60*60*1000), status: 'published' },
+  { id: 'demo_4', title: 'متجر ملابس أونلاين', desc: 'متجر ملابس شبابية أونلاين.', author: 'هدى', needLabel: '💰🤝 تمويل أو شريك', governorate: 'القاهرة', views: 145, saves: 28, shares: 5, createdAt: Date.now() - (4*24*60*60*1000), status: 'published' },
+  { id: 'demo_5', title: 'تطبيق حجز مواعيد الدكتور', desc: 'تطبيق بسيط يحجز مواعيد الدكتور.', author: 'محمود', needLabel: '🤝 شريك', governorate: 'القاهرة', views: 210, saves: 45, shares: 15, createdAt: Date.now() - (5*24*60*60*1000), status: 'published' },
+  { id: 'demo_6', title: 'مشروع زراعة أسطح', desc: 'استغلال أسطح المباني في زراعة خضروات.', author: 'كريم', needLabel: '👥 حد يساعدني', governorate: 'القاهرة', views: 95, saves: 18, shares: 4, createdAt: Date.now() - (6*24*60*60*1000), status: 'published' },
+  { id: 'demo_7', title: 'رحلات سياحية داخلية', desc: 'رحلات سياحية للشباب داخل مصر.', author: 'ياسمين', needLabel: '💰 تمويل', governorate: 'الأقصر', views: 270, saves: 52, shares: 18, createdAt: Date.now() - (7*24*60*60*1000), status: 'published' },
+  { id: 'demo_8', title: 'خدمة تنظيف منازل احترافية', desc: 'شركة تنظيف منازل بفريق مدرب.', author: 'نهى', needLabel: '💰🤝 تمويل أو شريك', governorate: 'القاهرة', views: 160, saves: 30, shares: 7, createdAt: Date.now() - (8*24*60*60*1000), status: 'published' }
+];
+
+const STORAGE_KEY = 'afkario_ideas_v1';
+
+function getIdeas() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch (e) {}
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(DEMO_IDEAS));
+  return DEMO_IDEAS;
+}
+
+function renderStats() {
+  const ideas = getIdeas().filter(i => i.status === 'published');
+  const today = new Date().toDateString();
+  const todayCount = ideas.filter(i => new Date(i.createdAt).toDateString() === today).length;
+  document.getElementById('stat-total').textContent = ideas.length;
+  document.getElementById('stat-today').textContent = todayCount;
+  document.getElementById('stat-users').textContent = ideas.length;
+}
+
+function renderIdeas() {
+  const ideas = getIdeas().filter(i => i.status === 'published').sort((a, b) => b.createdAt - a.createdAt);
+  const grid = document.getElementById('ideas-grid');
+  grid.innerHTML = ideas.map(idea => `
+    <div class="idea-card" data-id="${idea.id}">
+      <h3>${idea.title}</h3>
+      <p class="desc">${idea.desc}</p>
+      <div class="meta">
+        <span class="tag tag-need">${idea.needLabel}</span>
+        <span class="tag tag-loc">📍 ${idea.governorate}</span>
+      </div>
+      <div class="social">
+        <span>👁️ ${idea.views}</span>
+        <span>⭐ ${idea.saves}</span>
+        <span>📤 ${idea.shares}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function init() {
+  renderStats();
+  renderIdeas();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>/body>
 </html>
