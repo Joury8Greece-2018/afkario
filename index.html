@@ -818,7 +818,7 @@ function openDetail(id) {
         <button class="btn btn-primary" onclick="toast('قريباً — التواصل هيتفعّل قريب')">
           💬 تواصل
         </button>
-        <button class="btn btn-secondary" onclick="toast('اتحفظت للقعدة الجاية ⭐')">
+        <button class="btn btn-secondary" onclick="handleSave('${idea.id}')">
           ⭐ احفظ
         </button>
       </div>
@@ -953,3 +953,24 @@ document.addEventListener('DOMContentLoaded', function() {
   }, 100);
 });
 </script>
+
+// ========== دالة حفظ الفكرة ==========
+function handleSave(id) {
+  const isNowSaved = toggleSave(id);
+  toast(isNowSaved ? '⭐ اتحفظت للقعدة الجاية' : 'اتشالت من المحفوظات');
+  closeDetail();
+}
+
+// ========== دالة حفظ الفكرة ==========
+function handleSave(id) {
+  const isNowSaved = toggleSave(id);
+  toast(isNowSaved ? '⭐ اتحفظت للقعدة الجاية' : 'اتشالت من المحفوظات');
+  closeDetail();
+}
+
+// ========== دالة حفظ الفكرة ==========
+function handleSave(id) {
+  const isNowSaved = toggleSave(id);
+  toast(isNowSaved ? '⭐ اتحفظت للقعدة الجاية' : 'اتشالت من المحفوظات');
+  closeDetail();
+}
