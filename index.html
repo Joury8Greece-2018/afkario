@@ -524,8 +524,8 @@ function renderIdeas() {
 function init() {
   renderStats();
   renderIdeas();
-  const addBtn = document.getElementById('btn-add');
-  if (addBtn) addBtn.onclick = openAdd;
+
+
   document.addEventListener('click', (e) => {
     const card = e.target.closest('.idea-card');
     if (card && card.dataset.id) openDetail(card.dataset.id);
