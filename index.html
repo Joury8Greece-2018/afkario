@@ -861,3 +861,95 @@ init();
 </html>
 <!-- v2 -->
 <!-- update 5 -->
+
+<!-- ========== صفحة المحفوظات ========== -->
+<div id="saved-page" style="display:none; position:fixed; inset:0; background:var(--bg); z-index:150; overflow-y:auto; padding:20px 16px 100px;">
+  <button onclick="closeSaved()" style="background:var(--white); border:1px solid var(--border); width:40px; height:40px; border-radius:50%; font-size:1.2rem; margin-bottom:20px;">←</button>
+  <h1 style="font-size:1.4rem; font-weight:900; color:var(--text); margin:0 0 20px;">⭐ المحفوظات</h1>
+  <div id="saved-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;"></div>
+</div>
+
+<script>
+// ========== دوال المحفوظات ==========
+const SAVED_KEY = 'afkario_saved_v1';
+
+function getSavedIds() {
+  try {
+    const stored = localStorage.getItem(SAVED_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch (e) {}
+  return [];
+}
+
+function isSaved(id) {
+  return getSavedIds().includes(id);
+}
+
+function toggleSave(id) {
+  const saved = getSavedIds();
+  const index = saved.indexOf(id);
+  if (index === -1) {
+    saved.push(id);
+    localStorage.setItem(SAVED_KEY, JSON.stringify(saved));
+    return true;
+  } else {
+    saved.splice(index, 1);
+    localStorage.setItem(SAVED_KEY, JSON.stringify(saved));
+    return false;
+  }
+}
+
+function openSaved() {
+  renderSavedGrid();
+  document.getElementById('saved-page').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSaved() {
+  document.getElementById('saved-page').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function renderSavedGrid() {
+  const grid = document.getElementById('saved-grid');
+  const savedIds = getSavedIds();
+  const allIdeas = getIdeas();
+  const savedIdeas = allIdeas.filter(idea => savedIds.includes(idea.id));
+
+  if (!savedIdeas.length) {
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1; text-align:center; padding:40px 20px;"><span style="font-size:2.5rem; display:block; margin-bottom:10px;">⭐</span>مفيش أفكار محفوظة</div>';
+    return;
+  }
+
+  grid.innerHTML = savedIdeas.map(idea => `
+    <div class="idea-card" data-id="${idea.id}">
+      <h3>${idea.title}</h3>
+      <p class="desc">${idea.desc}</p>
+      <div class="meta">
+        <span class="tag tag-need">${idea.needLabel}</span>
+        <span class="tag tag-loc">📍 ${idea.governorate}</span>
+      </div>
+      <div class="social">
+        <span>👁️ ${idea.views}</span>
+        <span>⭐ ${idea.saves}</span>
+        <span>📤 ${idea.shares}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ربط زر المحفوظات في الشريط السفلي
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    const navButtons = document.querySelectorAll('.bottom-nav button');
+    navButtons.forEach(function(btn) {
+      if (btn.dataset.page === 'saved') {
+        btn.onclick = function(e) {
+          e.preventDefault();
+          openSaved();
+        };
+      }
+    });
+  }, 100);
+});
+</script>
