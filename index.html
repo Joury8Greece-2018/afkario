@@ -310,7 +310,10 @@
 <div class="section-head">
   <h2>📋 الأفكار اللي وصلت</h2>
 </div>
-
+<!-- خانة البحث -->
+  <div id="search-box" class="search-box" style="display:none">
+    <input type="text" id="search-input" placeholder="🔎 ابحث في الأفكار...">
+  </div>
 <!-- شبكة الأفكار -->
 <div id="ideas-grid" class="ideas-grid"></div>
 
@@ -467,8 +470,28 @@
   .toast.show {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
-  }</style>
+  }/* ========== خانة البحث ========== */
+  .search-box {
+    margin: 16px 0;
+  }
 
+  .search-box input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--text);
+    box-sizing: border-box;
+  }
+
+  .search-box input:focus {
+    outline: none;
+    border-color: var(--blue);
+  }
+</style>
 <script>
 const DEMO_IDEAS = [
   { id: 'demo_1', title: 'صالون رجالي متنقل', desc: 'صالون رجالي بييجي لحد البيت أو الشغل.', author: 'أحمد', needLabel: '💰 تمويل', governorate: 'القاهرة', views: 250, saves: 40, shares: 12, createdAt: Date.now() - (1*24*60*60*1000), status: 'published' },
@@ -525,10 +548,55 @@ function init() {
   renderStats();
   renderIdeas();
 const searchBtn = document.getElementById('btn-search');
-  if (searchBtn) searchBtn.onclick = () => {
-    toast('البحث هيتفعّل قريب 🔎');
-  };
-
+  const searchBox = document.getElementById('search-box');
+  const searchInput = document.getElementById('search-input');
+  
+  if (searchBtn && searchBox) {
+    searchBtn.onclick = () => {
+      const isVisible = searchBox.style.display !== 'none';
+      searchBox.style.display = isVisible ? 'none' : 'block';
+      if (!isVisible && searchInput) searchInput.focus();
+    };
+  }
+  
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.trim().toLowerCase();
+      const allIdeas = getIdeas().filter(i => i.status === 'published');
+      
+      let filtered = allIdeas;
+      if (query) {
+        filtered = allIdeas.filter(idea => {
+          const hay = (idea.title + ' ' + idea.desc + ' ' + idea.author + ' ' + idea.governorate).toLowerCase();
+          return hay.includes(query);
+        });
+      }
+      
+      filtered.sort((a, b) => b.createdAt - a.createdAt);
+      const grid = document.getElementById('ideas-grid');
+      
+      if (!filtered.length) {
+        grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><span class="big">🔍</span>مفيش نتائج</div>';
+        return;
+      }
+      
+      grid.innerHTML = filtered.map(idea => `
+        <div class="idea-card" data-id="${idea.id}">
+          <h3>${idea.title}</h3>
+          <p class="desc">${idea.desc}</p>
+          <div class="meta">
+            <span class="tag tag-need">${idea.needLabel}</span>
+            <span class="tag tag-loc">📍 ${idea.governorate}</span>
+          </div>
+          <div class="social">
+            <span>👁️ ${idea.views}</span>
+            <span>⭐ ${idea.saves}</span>
+            <span>📤 ${idea.shares}</span>
+          </div>
+        </div>
+      `).join('');
+    });
+  }
   document.addEventListener('click', (e) => {
     const card = e.target.closest('.idea-card');
     if (card && card.dataset.id) openDetail(card.dataset.id);
