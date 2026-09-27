@@ -491,6 +491,51 @@
     outline: none;
     border-color: var(--blue);
   }
+  /* ========== نموذج الإضافة ========== */
+  .modal-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-mid);
+    margin: 0 0 20px;
+    padding-left: 50px;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-group label {
+    display: block;
+    font-weight: 700;
+    color: var(--text-mid);
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 13px 14px;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--text);
+    box-sizing: border-box;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: var(--blue);
+  }
+
+  .form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
 </style>
 <script>
 const DEMO_IDEAS = [
@@ -601,8 +646,138 @@ const searchBtn = document.getElementById('btn-search');
     const card = e.target.closest('.idea-card');
     if (card && card.dataset.id) openDetail(card.dataset.id);
   });
+  const addBtn = document.getElementById('btn-add');
+  if (addBtn) addBtn.onclick = openAdd;
 }
-// ========== فتح تفاصيل الفكرة ==========
+// ========== فتح نموذج إضافة فكرة ==========
+function openAdd() {
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.id = 'add-modal';
+  
+  modal.innerHTML = `
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeAdd()">✕</button>
+      
+      <h2>💡 اكتب فكرتك</h2>
+      <p class="modal-subtitle">احكي لنا فكرتك بطريقتك. مش لازم تكون خبير.</p>
+      
+      <div class="form-group">
+        <label>عنوان الفكرة</label>
+        <input type="text" id="f-title" placeholder="مثال: مطعم فول بلمسة عصرية" maxlength="80">
+      </div>
+      
+      <div class="form-group">
+        <label>الوصف</label>
+        <textarea id="f-desc" rows="4" placeholder="اكتب كل حاجة عن فكرتك..." maxlength="500"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label>الاحتياج</label>
+        <select id="f-need">
+          <option value="💰 تمويل">💰 تمويل</option>
+          <option value="🤝 شريك">🤝 شريك</option>
+          <option value="💰🤝 تمويل أو شريك">💰🤝 تمويل أو شريك</option>
+          <option value="👥 حد يساعدني">👥 حد يساعدني</option>
+          <option value="📣 عايز أعرض الفكرة فقط">📣 عايز أعرض الفكرة فقط</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>المحافظة</label>
+        <select id="f-gov">
+          <option>القاهرة</option>
+          <option>الجيزة</option>
+          <option>الإسكندرية</option>
+          <option>الدقهلية</option>
+          <option>الشرقية</option>
+          <option>المنوفية</option>
+          <option>القليوبية</option>
+          <option>البحيرة</option>
+          <option>الغربية</option>
+          <option>بورسعيد</option>
+          <option>دمياط</option>
+          <option>الإسماعيلية</option>
+          <option>السويس</option>
+          <option>كفر الشيخ</option>
+          <option>الفيوم</option>
+          <option>بني سويف</option>
+          <option>المنيا</option>
+          <option>أسيوط</option>
+          <option>سوهاج</option>
+          <option>قنا</option>
+          <option>الأقصر</option>
+          <option>أسوان</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>اسمك</label>
+        <input type="text" id="f-author" placeholder="اكتب اسمك" maxlength="40">
+      </div>
+      
+      <div class="modal-actions" style="margin-top: 24px;">
+        <button class="btn btn-secondary" onclick="closeAdd()">إلغاء</button>
+        <button class="btn btn-primary" onclick="submitAdd()">💡 انشر الفكرة</button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  document.body.style.overflow = 'hidden';
+  
+  modal.addEventListener('click', (e) => {
+    if (e.target.id === 'add-modal') closeAdd();
+  });
+}
+
+function closeAdd() {
+  const modal = document.getElementById('add-modal');
+  if (modal) modal.remove();
+  document.body.style.overflow = '';
+}
+
+function submitAdd() {
+  const title = document.getElementById('f-title').value.trim();
+  const desc = document.getElementById('f-desc').value.trim();
+  const need = document.getElementById('f-need').value;
+  const gov = document.getElementById('f-gov').value;
+  const author = document.getElementById('f-author').value.trim() || 'مجهول';
+  
+  if (title.length < 4) {
+    toast('اكتب عنوان أوضح');
+    return;
+  }
+  if (desc.length < 15) {
+    toast('اكتب وصف أطول شوية');
+    return;
+  }
+  
+  const newIdea = {
+    id: 'idea_' + Date.now(),
+    title: title,
+    desc: desc,
+    author: author,
+    needLabel: need,
+    governorate: gov,
+    views: 0,
+    saves: 0,
+    shares: 0,
+    createdAt: Date.now(),
+    status: 'published'
+  };
+  
+  const ideas = getIdeas();
+  ideas.unshift(newIdea);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(ideas));
+  
+  closeAdd();
+  renderStats();
+  renderIdeas();
+  toast('🎉 فكرتك وصلت للقهوة!');
+}
+
+  // ========== فتح تفاصيل الفكرة ==========
 function openDetail(id) {
   const idea = getIdeas().find(i => i.id === id);
   if (!idea) return;
