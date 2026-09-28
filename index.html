@@ -1042,3 +1042,55 @@ document.addEventListener('DOMContentLoaded', function() {
   document.body.appendChild(mePage);
 });
 </script>
+
+<script>
+// ========== إصلاحات خطوة 8 ==========
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    
+    // 1. ربط زر "➕ إضافة" في الشريط السفلي
+    const navAdd = document.querySelector('.bottom-nav button[data-page="add"]');
+    if (navAdd) {
+      navAdd.onclick = function(e) {
+        e.preventDefault();
+        openAdd();
+      };
+    }
+    
+    // 2. ربط زر "🔍" في الهيدر
+    const headerSearch = document.querySelector('.header-icon');
+    if (headerSearch) {
+      headerSearch.onclick = function() {
+        const sb = document.getElementById('search-box');
+        if (sb) {
+          const isVis = sb.style.display !== 'none';
+          sb.style.display = isVis ? 'none' : 'block';
+          if (!isVis) {
+            sb.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(function() {
+              const si = document.getElementById('search-input');
+              if (si) si.focus();
+            }, 400);
+          }
+        }
+      };
+    }
+    
+    // 3. حفظ اسم المستخدم لما يضيف فكرة
+    const originalSubmitAdd = window.submitAdd;
+    if (typeof originalSubmitAdd === 'function') {
+      window.submitAdd = function() {
+        const authorEl = document.getElementById('f-author');
+        if (authorEl) {
+          const author = authorEl.value.trim();
+          if (author && author !== 'مجهول') {
+            localStorage.setItem('afkario_my_name', author);
+          }
+        }
+        return originalSubmitAdd.apply(this, arguments);
+      };
+    }
+    
+  }, 300);
+});
+</script>
