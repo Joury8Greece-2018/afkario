@@ -1119,3 +1119,36 @@ document.addEventListener('DOMContentLoaded', function() {
   }, 300);
 });
 </script>
+
+<script>
+// ========== إصلاح زر + في صفحة أنا ==========
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    
+    // 1. تأكد إن زر "➕" في الشريط السفلي يفتح النموذج — مش تاب جديد
+    const navAdd = document.querySelector('.bottom-nav button[data-page="add"]');
+    if (navAdd) {
+      navAdd.onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        openAdd();
+        return false;
+      };
+    }
+    
+    // 2. تأكد إن زر "➕" في صفحة "أنا" يفتح النموذج
+    // (لأن ممكن يكون فيه رابط في mePage)
+    const meContent = document.getElementById('me-content');
+    if (meContent) {
+      meContent.addEventListener('click', function(e) {
+        const link = e.target.closest('a');
+        if (link && link.getAttribute('href') === '#') {
+          e.preventDefault();
+          return false;
+        }
+      });
+    }
+    
+  }, 300);
+});
+</script>
