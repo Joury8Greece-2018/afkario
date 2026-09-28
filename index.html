@@ -1094,3 +1094,28 @@ document.addEventListener('DOMContentLoaded', function() {
   }, 300);
 });
 </script>
+<script>
+// ========== ربط زر البحث في الشريط السفلي ==========
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    const navSearch = document.querySelector('.bottom-nav button[data-page="search"]');
+    if (navSearch) {
+      navSearch.onclick = function(e) {
+        e.preventDefault();
+        const sb = document.getElementById('search-box');
+        if (sb) {
+          const isVis = sb.style.display !== 'none';
+          sb.style.display = isVis ? 'none' : 'block';
+          if (!isVis) {
+            sb.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(function() {
+              const si = document.getElementById('search-input');
+              if (si) si.focus();
+            }, 400);
+          }
+        }
+      };
+    }
+  }, 300);
+});
+</script>
