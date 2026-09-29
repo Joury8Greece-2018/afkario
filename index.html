@@ -1366,3 +1366,111 @@ if (typeof _origOpenMe === 'function') {
   };
 }
 </script>
+<script>
+// ========== إعادة النشر الحقيقية ==========
+const REPOSTS_KEY = 'afkario_reposts_v1';
+
+function getReposts() {
+  try {
+    const stored = localStorage.getItem(REPOSTS_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch (e) {}
+  return {};
+}
+
+function saveReposts(data) {
+  localStorage.setItem(REPOSTS_KEY, JSON.stringify(data));
+}
+
+function getIdeaReposts(ideaId) {
+  const all = getReposts();
+  return all[ideaId] || [];
+}
+
+function addRepost(ideaId, userName) {
+  const all = getReposts();
+  if (!all[ideaId]) all[ideaId] = [];
+  if (!all[ideaId].includes(userName)) {
+    all[ideaId].push(userName);
+    saveReposts(all);
+    return true;
+  }
+  return false;
+}
+
+// إضافة شريط "أعاد النشر" فوق الكارت
+function enhanceWithReposts() {
+  const cards = document.querySelectorAll('.idea-card');
+  cards.forEach(card => {
+    if (card.querySelector('.repost-badge')) return;
+    const id = card.dataset.id;
+    if (!id) return;
+    
+    const reposts = getIdeaReposts(id);
+    if (reposts.length === 0) return;
+    
+    const badge = document.createElement('div');
+    badge.className = 'repost-badge';
+    badge.style.cssText = 'background:#E0F2FE; color:#075985; padding:6px 10px; border-radius:10px; font-size:0.7rem; font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:5px;';
+    
+    let names = reposts.slice(0, 3).join(' + ');
+    if (reposts.length > 3) names += ' + ' + (reposts.length - 3) + ' آخرين';
+    
+    badge.innerHTML = '🔄 ' + names + ' أعادوا النشر';
+    
+    card.insertBefore(badge, card.firstChild);
+  });
+}
+
+// تعديل زر 🔄 عشان يعمل إعادة نشر حقيقية
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('.action-btn[data-act="repost"]');
+  if (!btn) return;
+  e.stopPropagation();
+  e.preventDefault();
+  
+  const ideaId = btn.dataset.idea;
+  const userName = localStorage.getItem('afkario_my_name') || 'زائر';
+  
+  const added = addRepost(ideaId, userName);
+  if (added) {
+    toast('🔄 أعدت نشر الفكرة باسمك');
+    enhanceWithReposts();
+  } else {
+    toast('إنت معيد النشر بالفعل');
+  }
+}, true);
+
+// تحديث عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    enhanceWithReposts();
+    
+    const grid = document.getElementById('ideas-grid');
+    if (grid) {
+      const observer = new MutationObserver(function() {
+        enhanceWithReposts();
+      });
+      observer.observe(grid, { childList: true, subtree: true });
+    }
+  }, 700);
+});
+
+// تحديث بعد فتح المحفوظات
+const _origOpenSaved2 = window.openSaved;
+if (typeof _origOpenSaved2 === 'function') {
+  window.openSaved = function() {
+    _origOpenSaved2.apply(this, arguments);
+    setTimeout(enhanceWithReposts, 200);
+  };
+}
+
+// تحديث بعد فتح "أنا"
+const _origOpenMe2 = window.openMe;
+if (typeof _origOpenMe2 === 'function') {
+  window.openMe = function() {
+    _origOpenMe2.apply(this, arguments);
+    setTimeout(enhanceWithReposts, 200);
+  };
+}
+</script>
