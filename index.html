@@ -1475,3 +1475,147 @@ if (typeof _origOpenMe2 === 'function') {
 }
 </script>
 <!-- repost -->
+
+<script>
+// ========== تعديلات الدماغ — الشريط السفلي الثابت + Explore ==========
+(function() {
+  
+  // 1. نضيف زر Explore في الشريط السفلي (بدل أي زر زيادة)
+  function ensureExploreButton() {
+    const nav = document.querySelector('.bottom-nav');
+    if (!nav) return;
+    if (nav.querySelector('[data-page="explore"]')) return;
+    
+    // نغير الزر "البحث" — نعمل زرين: البحث + استكشاف
+    // بس عشان مفيش مساحة، هنحول "البحث" الحالي لـ "استكشاف"
+    // (البحث موجود في الهيدر بالفعل)
+    const searchBtn = nav.querySelector('[data-page="search"]');
+    if (searchBtn) {
+      searchBtn.dataset.page = 'explore';
+      searchBtn.innerHTML = '<span class="ic">🧭</span><span>استكشاف</span>';
+    }
+  }
+  
+  // 2. نعمل صفحة Explore
+  function createExplorePage() {
+    if (document.getElementById('explore-page')) return;
+    
+    const page = document.createElement('div');
+    page.id = 'explore-page';
+    page.style.cssText = 'display:none; position:fixed; inset:0; background:var(--bg); z-index:150; overflow-y:auto; padding:20px 16px 130px;';
+    page.innerHTML = `
+      <button onclick="closeExplore()" style="background:var(--white); border:1px solid var(--border); width:40px; height:40px; border-radius:50%; font-size:1.2rem; margin-bottom:20px; cursor:pointer;">←</button>
+      <h1 style="font-size:1.4rem; font-weight:900; color:var(--text); margin:0 0 6px;">🧭 استكشاف</h1>
+      <p style="color:var(--text-mid); font-size:0.9rem; margin:0 0 20px;">تصفح أفكار عشوائية من كل التصنيفات</p>
+      
+      <div id="explore-filters" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:20px;">
+        <button class="explore-chip active" data-explore-cat="" style="padding:7px 14px; border-radius:20px; background:var(--blue); color:white; font-size:0.82rem; font-weight:700; border:none;">الكل</button>
+        <button class="explore-chip" data-explore-cat="food" style="padding:7px 14px; border-radius:20px; background:var(--bg-soft); color:var(--text-mid); font-size:0.82rem; font-weight:700; border:none;">🍔 أكل</button>
+        <button class="explore-chip" data-explore-cat="tech" style="padding:7px 14px; border-radius:20px; background:var(--bg-soft); color:var(--text-mid); font-size:0.82rem; font-weight:700; border:none;">💻 تكنولوجيا</button>
+        <button class="explore-chip" data-explore-cat="services" style="padding:7px 14px; border-radius:20px; background:var(--bg-soft); color:var(--text-mid); font-size:0.82rem; font-weight:700; border:none;">🧑‍🔧 خدمات</button>
+        <button class="explore-chip" data-explore-cat="women" style="padding:7px 14px; border-radius:20px; background:var(--bg-soft); color:var(--text-mid); font-size:0.82rem; font-weight:700; border:none;">💖 أعمال السيدات</button>
+      </div>
+      
+      <div id="explore-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;"></div>
+    `;
+    document.body.appendChild(page);
+  }
+  
+  // 3. عرض أفكار Explore
+  function renderExplore(category) {
+    const grid = document.getElementById('explore-grid');
+    if (!grid) return;
+    
+    let ideas = getIdeas().filter(i => i.status === 'published');
+    
+    // لو في تصنيف محدد، نستخدمه
+    if (category) {
+      // بنحاول نعمل match بسيط
+      const catMap = {
+        'food': '🍔',
+        'tech': '💻',
+        'services': '🧑‍🔧',
+        'women': '💖'
+      };
+      const emoji = catMap[category];
+      if (emoji) {
+        ideas = ideas.filter(i => i.needLabel && i.needLabel.includes(emoji) || 
+          (i.title && i.title.includes('تكنولوجيا')) ||
+          (i.title && i.title.includes('أكل')) ||
+          (i.title && i.title.includes('نساء'))
+        );
+      }
+    }
+    
+    if (!ideas.length) {
+      grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px 20px; color:var(--text-mid);">مفيش أفكار هنا</div>';
+      return;
+    }
+    
+    // عشوائي
+    ideas = ideas.sort(() => Math.random() - 0.5);
+    
+    grid.innerHTML = ideas.map(idea => `
+      <div class="idea-card" data-id="${idea.id}" onclick="if(typeof openDetail === 'function') openDetail('${idea.id}')">
+        <h3>${idea.title}</h3>
+        <p class="desc">${idea.desc}</p>
+        <div class="meta">
+          <span class="tag tag-need">${idea.needLabel}</span>
+          <span class="tag tag-loc">📍 ${idea.governorate}</span>
+        </div>
+        <div class="social">
+          <span>👁️ ${idea.views}</span>
+          <span>⭐ ${idea.saves}</span>
+          <span>📤 ${idea.shares}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+  
+  // 4. فتح صفحة Explore
+  window.openExplore = function() {
+    createExplorePage();
+    renderExplore('');
+    document.getElementById('explore-page').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  };
+  
+  window.closeExplore = function() {
+    const page = document.getElementById('explore-page');
+    if (page) page.style.display = 'none';
+    document.body.style.overflow = '';
+  };
+  
+  // 5. ربط الزر
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      ensureExploreButton();
+      
+      // ربط زر Explore
+      const exploreBtn = document.querySelector('.bottom-nav [data-page="explore"]');
+      if (exploreBtn) {
+        exploreBtn.onclick = function(e) {
+          e.preventDefault();
+          openExplore();
+        };
+      }
+      
+      // ربط فلاتر Explore
+      document.addEventListener('click', function(e) {
+        const chip = e.target.closest('.explore-chip');
+        if (!chip) return;
+        document.querySelectorAll('.explore-chip').forEach(c => {
+          c.style.background = 'var(--bg-soft)';
+          c.style.color = 'var(--text-mid)';
+          c.classList.remove('active');
+        });
+        chip.style.background = 'var(--blue)';
+        chip.style.color = 'white';
+        chip.classList.add('active');
+        renderExplore(chip.dataset.exploreCat || '');
+      });
+    }, 400);
+  });
+  
+})();
+</script>
