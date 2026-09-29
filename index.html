@@ -1265,3 +1265,104 @@ if (typeof originalOpenMe === 'function') {
   };
 }
 </script>
+
+<script>
+// ========== تعديلات الدماغ — شريط التفاعل ==========
+function enhanceWithActionBar() {
+  const cards = document.querySelectorAll('.idea-card');
+  cards.forEach(card => {
+    if (card.querySelector('.action-bar')) return;
+    const id = card.dataset.id;
+    if (!id) return;
+    
+    const bar = document.createElement('div');
+    bar.className = 'action-bar';
+    bar.style.cssText = 'display:flex; gap:4px; margin-top:8px; padding-top:8px; border-top:1px solid var(--border); justify-content:space-between; align-items:center;';
+    
+    bar.innerHTML = `
+      <button class="action-btn" data-act="share" data-idea="${id}" style="background:none; border:none; font-size:0.72rem; font-weight:700; color:var(--text-mid); padding:6px 8px; border-radius:8px; display:flex; align-items:center; gap:3px; cursor:pointer;">📤 مشاركة</button>
+      <button class="action-btn" data-act="repost" data-idea="${id}" style="background:none; border:none; font-size:0.72rem; font-weight:700; color:var(--text-mid); padding:6px 8px; border-radius:8px; display:flex; align-items:center; gap:3px; cursor:pointer;">🔄 إعادة</button>
+      <button class="action-btn" data-act="save" data-idea="${id}" style="background:none; border:none; font-size:0.72rem; font-weight:700; color:var(--text-mid); padding:6px 8px; border-radius:8px; display:flex; align-items:center; gap:3px; cursor:pointer;">⭐ حفظ</button>
+    `;
+    
+    card.appendChild(bar);
+  });
+}
+
+// معالج أزرار الشريط
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('.action-btn');
+  if (!btn) return;
+  e.stopPropagation();
+  e.preventDefault();
+  
+  const ideaId = btn.dataset.idea;
+  const action = btn.dataset.act;
+  const idea = getIdeas().find(i => i.id === ideaId);
+  if (!idea) return;
+  
+  if (action === 'share') {
+    const url = location.origin + location.pathname + '#idea=' + ideaId;
+    const text = '💡 شوف الفكرة دي على مقهى الأفكار\n' + url;
+    if (navigator.share) {
+      navigator.share({ title: idea.title, text: text, url: url }).catch(function(){});
+    } else {
+      window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+    }
+    toast('📤 شارك الفكرة');
+  }
+  
+  if (action === 'repost') {
+    const url = location.origin + location.pathname + '#idea=' + ideaId;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(function() {
+        toast('🔄 اتنسخ الرابط لإعادة النشر');
+      }).catch(function() {
+        prompt('انسخ الرابط:', url);
+      });
+    } else {
+      prompt('انسخ الرابط:', url);
+    }
+  }
+  
+  if (action === 'save') {
+    const isNowSaved = toggleSave(ideaId);
+    btn.innerHTML = isNowSaved ? '⭐ محفوظة' : '⭐ حفظ';
+    btn.style.background = isNowSaved ? '#FFF3CD' : 'none';
+    toast(isNowSaved ? '⭐ اتحفظت' : 'اتشالت من المحفوظات');
+  }
+});
+
+// ربط الشريط بالكروت
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    enhanceWithActionBar();
+    
+    const grid = document.getElementById('ideas-grid');
+    if (grid) {
+      const observer = new MutationObserver(function() {
+        enhanceWithActionBar();
+      });
+      observer.observe(grid, { childList: true, subtree: true });
+    }
+  }, 600);
+});
+
+// تحديث بعد فتح المحفوظات
+const _origOpenSaved = window.openSaved;
+if (typeof _origOpenSaved === 'function') {
+  window.openSaved = function() {
+    _origOpenSaved.apply(this, arguments);
+    setTimeout(enhanceWithActionBar, 150);
+  };
+}
+
+// تحديث بعد فتح "أنا"
+const _origOpenMe = window.openMe;
+if (typeof _origOpenMe === 'function') {
+  window.openMe = function() {
+    _origOpenMe.apply(this, arguments);
+    setTimeout(enhanceWithActionBar, 150);
+  };
+}
+</script>
