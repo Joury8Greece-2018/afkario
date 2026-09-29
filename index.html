@@ -1153,3 +1153,115 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <!-- fix -->
+
+<script>
+// ========== تعديلات الدماغ — إيموجي ردود الفعل ==========
+const REACTIONS_KEY = 'afkario_reactions_v1';
+const REACTION_EMOJIS = ['😂', '👏', '🤝', '❤️', '🤯'];
+
+function getReactions() {
+  try {
+    const stored = localStorage.getItem(REACTIONS_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch (e) {}
+  return {};
+}
+
+function saveReactions(data) {
+  localStorage.setItem(REACTIONS_KEY, JSON.stringify(data));
+}
+
+function getIdeaReactions(ideaId) {
+  const all = getReactions();
+  return all[ideaId] || {};
+}
+
+function toggleReaction(ideaId, emoji) {
+  const all = getReactions();
+  if (!all[ideaId]) all[ideaId] = {};
+  if (!all[ideaId][emoji]) all[ideaId][emoji] = 0;
+  all[ideaId][emoji] += 1;
+  saveReactions(all);
+  return all[ideaId][emoji];
+}
+
+// إضافة شريط الإيموجي على كل كارت فكرة
+function enhanceIdeaCards() {
+  const cards = document.querySelectorAll('.idea-card');
+  cards.forEach(card => {
+    if (card.querySelector('.reactions-bar')) return;
+    const id = card.dataset.id;
+    if (!id) return;
+    
+    const reactions = getIdeaReactions(id);
+    const bar = document.createElement('div');
+    bar.className = 'reactions-bar';
+    bar.style.cssText = 'display:flex; gap:6px; margin-top:10px; padding-top:8px; border-top:1px solid var(--border); justify-content:space-between;';
+    
+    let html = '';
+    REACTION_EMOJIS.forEach(emoji => {
+      const count = reactions[emoji] || 0;
+      html += '<button class="react-btn" data-emoji="' + emoji + '" data-idea="' + id + '" style="background:none; border:none; font-size:0.85rem; display:flex; align-items:center; gap:3px; padding:4px 6px; border-radius:8px; font-weight:700; color:var(--text-mid); cursor:pointer;">' + emoji + (count ? ' ' + count : '') + '</button>';
+    });
+    
+    bar.innerHTML = html;
+    card.appendChild(bar);
+  });
+}
+
+// معالج الضغط على الإيموجي
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('.react-btn');
+  if (!btn) return;
+  e.stopPropagation();
+  e.preventDefault();
+  
+  const ideaId = btn.dataset.idea;
+  const emoji = btn.dataset.emoji;
+  const newCount = toggleReaction(ideaId, emoji);
+  
+  // تحديث الواجهة
+  btn.innerHTML = emoji + ' ' + newCount;
+  btn.style.background = '#FFF3CD';
+  
+  setTimeout(function() {
+    btn.style.background = 'none';
+  }, 500);
+  
+  toast('سجلنا رد فعلك ' + emoji);
+});
+
+// تحديث الكروت بعد أي render
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    enhanceIdeaCards();
+    
+    // مراقبة الشبكة لأي تحديث
+    const grid = document.getElementById('ideas-grid');
+    if (grid) {
+      const observer = new MutationObserver(function() {
+        enhanceIdeaCards();
+      });
+      observer.observe(grid, { childList: true, subtree: true });
+    }
+  }, 500);
+});
+
+// تحديث الكروت بعد فتح صفحة المحفوظات
+const originalOpenSaved = window.openSaved;
+if (typeof originalOpenSaved === 'function') {
+  window.openSaved = function() {
+    originalOpenSaved.apply(this, arguments);
+    setTimeout(enhanceIdeaCards, 100);
+  };
+}
+
+// تحديث الكروت بعد فتح صفحة "أنا"
+const originalOpenMe = window.openMe;
+if (typeof originalOpenMe === 'function') {
+  window.openMe = function() {
+    originalOpenMe.apply(this, arguments);
+    setTimeout(enhanceIdeaCards, 100);
+  };
+}
+</script>
