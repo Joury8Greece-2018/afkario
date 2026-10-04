@@ -1929,3 +1929,98 @@ if (typeof _origOpenMe2 === 'function') {
 
 })();
 </script>
+
+<script>
+// ========== تعديلات الدماغ — تحسين البروفايل بالصورة الرمزية ==========
+(function() {
+
+  function enhanceProfileWithAvatar() {
+    const content = document.getElementById('profile-content') || document.getElementById('me-content');
+    if (!content) return;
+
+    // الصورة الرمزية
+    const avatar = localStorage.getItem('afkario_my_avatar') || '';
+    const name = localStorage.getItem('afkario_my_name') || '';
+    const whatsapp = localStorage.getItem('afkario_my_whatsapp') || '';
+    const showWA = localStorage.getItem('afkario_my_show_wa') !== 'false';
+    const bio = localStorage.getItem('afkario_my_bio') || '';
+
+    // 1. استبدال الحرف الأول بالإيموجي (لو موجود)
+    if (avatar) {
+      const circles = content.querySelectorAll('div[style*="border-radius:50%"][style*="background:linear-gradient"]');
+      circles.forEach(c => {
+        if (c.textContent.trim().length <= 2) {
+          c.textContent = avatar;
+        }
+      });
+    }
+
+    // 2. إضافة Bio تحت الاسم
+    if (bio && name) {
+      const nameHeading = content.querySelector('h2');
+      if (nameHeading && !nameHeading.nextElementSibling?.classList?.contains('profile-bio')) {
+        const bioEl = document.createElement('p');
+        bioEl.className = 'profile-bio';
+        bioEl.style.cssText = 'color:var(--text-mid); font-size:0.9rem; margin:0 0 10px; text-align:center;';
+        bioEl.textContent = bio;
+        nameHeading.parentNode.insertBefore(bioEl, nameHeading.nextSibling);
+      }
+    }
+
+    // 3. إضافة زر "تعديل" بجانب الاسم
+    const nameHeading = content.querySelector('h2');
+    if (nameHeading && !content.querySelector('.edit-profile-btn')) {
+      const editBtn = document.createElement('button');
+      editBtn.className = 'edit-profile-btn';
+      editBtn.textContent = '✏️ تعديل';
+      editBtn.style.cssText = 'display:block; margin:0 auto 12px; background:var(--white); border:1.5px solid var(--border); color:var(--text); padding:8px 16px; border-radius:20px; font-size:0.82rem; font-weight:700; cursor:pointer;';
+      editBtn.onclick = function() {
+        if (typeof openEditProfile === 'function') openEditProfile();
+      };
+      nameHeading.parentNode.insertBefore(editBtn, nameHeading.nextSibling);
+    }
+
+    // 4. عرض زر الواتساب (لو موجود + للعامة)
+    const waBtn = content.querySelector('a[href*="wa.me"]');
+    if (!waBtn && whatsapp && showWA && name) {
+      const waLink = document.createElement('a');
+      waLink.href = 'https://wa.me/' + whatsapp.replace(/\D/g, '');
+      waLink.target = '_blank';
+      waLink.textContent = '📲 واتساب';
+      waLink.style.cssText = 'display:inline-block; background:#25D366; color:white; padding:10px 20px; border-radius:12px; font-size:0.85rem; font-weight:700; text-decoration:none; margin:8px auto 0;';
+      const nameContainer = nameHeading?.parentNode;
+      if (nameContainer) {
+        nameContainer.appendChild(document.createElement('br'));
+        nameContainer.appendChild(waLink);
+      }
+    }
+
+    // 5. ربط كروت البروفايل بـ openDetail
+    content.querySelectorAll('.idea-card').forEach(card => {
+      if (card.dataset.bound === 'true') return;
+      card.dataset.bound = 'true';
+      card.style.cursor = 'pointer';
+      card.onclick = function() {
+        const id = card.dataset.id;
+        if (id && typeof openDetail === 'function') openDetail(id);
+      };
+    });
+  }
+
+  // تشغيل بعد فتح البروفايل
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      const origOpen = window.openProfile;
+      if (typeof origOpen === 'function' && !origOpen._enhanced) {
+        const enhanced = function() {
+          origOpen.apply(this, arguments);
+          setTimeout(enhanceProfileWithAvatar, 400);
+        };
+        enhanced._enhanced = true;
+        window.openProfile = enhanced;
+      }
+    }, 1200);
+  });
+
+})();
+</script>
