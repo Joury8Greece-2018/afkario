@@ -93,7 +93,7 @@
       <h3 style="font-size:1rem; font-weight:800; color:var(--text); margin:20px 0 12px;">📝 أفكاري (${myIdeas.length})</h3>
       
       ${myIdeas.length ? `
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
+        <div class="ideas-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
           ${myIdeas.map(idea => `
             <div class="idea-card" data-id="${idea.id}">
               <h3>${idea.title}</h3>
@@ -118,6 +118,13 @@
         if (typeof toast === 'function') toast(newValue ? '🔔 الإشعارات مفعّلة' : '🔕 الإشعارات معطّلة');
       };
     }
+
+    // ⭐⭐⭐ هنا التحسينات — بعد رسم الكروت مباشرة ⭐⭐⭐
+    setTimeout(function() {
+      if (typeof enhanceIdeaCards === 'function') enhanceIdeaCards();
+      if (typeof enhanceWithActionBar === 'function') enhanceWithActionBar();
+      if (typeof enhanceWithReposts === 'function') enhanceWithReposts();
+    }, 50);
   }
 
   // ============ 2. صفحة تعديل البروفايل ============
@@ -236,7 +243,7 @@
     document.body.style.overflow = '';
   }
 
-  // ============ 3. ربط الكروت في كل مكان ============
+  // ============ 3. ربط الكروت بـ openDetail (Event Delegation) ============
   document.addEventListener('click', function(e) {
     const card = e.target.closest('.idea-card');
     if (!card) return;
@@ -278,19 +285,14 @@
             setTimeout(renderProfileFull, 400);
           };
         }
-      }, 500);
+      }, 500Profile);
     }, 800);
   });
 
   window.openEditProfile = openEditProfilePage;
-  window.closeEditProfile = closeEditProfilePage;
+  window.closeEdit = closeEditProfilePage;
   window.renderProfileFull = renderProfileFull;
 
+  // ❌ تم حذف الـ setTimeout القديم من هنا
 
-  // تحسين كروت البروفايل بعد الرسم
-  setTimeout(function() {
-    if (typeof enhanceIdeaCards === 'function') enhanceIdeaCards();
-    if (typeof enhanceWithActionBar === 'function') enhanceWithActionBar();
-    if (typeof enhanceWithReposts === 'function') enhanceWithReposts();
-  }, 400);
 })();
