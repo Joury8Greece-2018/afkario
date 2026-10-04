@@ -2172,3 +2172,70 @@ if (typeof _origOpenMe2 === 'function') {
 
 })();
 </script>
+
+<style>
+  /* إصلاح اتجاه الأرقام في كل الموقع */
+  .wa-number,
+  p[dir="ltr"],
+  span[dir="ltr"] {
+    direction: ltr !important;
+    unicode-bidi: embed !important;
+  }
+</style>
+
+<script>
+// ========== إصلاح شامل — الأرقام + الكروت ==========
+(function() {
+
+  // 1. إصلاح كل الأرقام (يصير اتجاهها ltr)
+  function fixNumbers() {
+    const selectors = '#profile-content, #me-content, #saved-page, #explore-page, #profile-page';
+    document.querySelectorAll(selectors).forEach(container => {
+      // نلف كل عنصر فيه رقم
+      container.querySelectorAll('p, span, div').forEach(el => {
+        if (el.children.length > 0) return; // تجاهل اللي فيه عناصر تانية
+        const text = (el.textContent || '').trim();
+        if (/^\+?\d{8,}$/.test(text)) {
+          el.setAttribute('dir', 'ltr');
+          el.style.direction = 'ltr';
+          el.style.unicodeBidi = 'embed';
+        }
+      });
+    });
+  }
+
+  // 2. ربط كل الكروت بـ openDetail (event delegation — أفضل طريقة)
+  document.addEventListener('click', function(e) {
+    const card = e.target.closest('.idea-card');
+    if (!card) return;
+    
+    // متشغلش لو المستخدم داس على زر أو رابط
+    if (e.target.closest('button') || e.target.closest('a')) return;
+    
+    const id = card.dataset.id;
+    if (id && typeof openDetail === 'function') {
+      e.preventDefault();
+      openDetail(id);
+    }
+  }, true); // ← true = capture phase (يشتغل قبل أي handler تاني)
+
+  // 3. تشغيل عند تحميل الصفحة
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(fixNumbers, 1000);
+    
+    // إعادة التشغيل بعد فتح أي صفحة
+    ['openProfile', 'openSaved', 'openExplore', 'openMe'].forEach(fnName => {
+      const orig = window[fnName];
+      if (typeof orig === 'function' && !orig._allFixed) {
+        const fixed = function() {
+          orig.apply(this, arguments);
+          setTimeout(fixNumbers, 500);
+        };
+        fixed._allFixed = true;
+        window[fnName] = fixed;
+      }
+    });
+  });
+
+})();
+</script>
