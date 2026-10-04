@@ -294,5 +294,21 @@
   window.renderProfileFull = renderProfileFull;
 
   // ❌ تم حذف الـ setTimeout القديم من هنا
+// ============ 5. إصلاح فتح الكروت في البروفايل (نسخة جديدة) ============
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('button') || e.target.closest('a')) return;
+    
+    const card = e.target.closest('.idea-card');
+    if (!card) return;
+    
+    const id = card.dataset.id;
+    if (!id) return;
+    
+    if (typeof window.openDetail === 'function') {
+      e.preventDefault();
+      e.stopPropagation();
+      window.openDetail(id);
+    }
+  });
 
 })();
