@@ -2024,3 +2024,115 @@ if (typeof _origOpenMe2 === 'function') {
 
 })();
 </script>
+
+<script>
+// ========== تعديلات الدماغ — إصلاح الرقم + ربط الكروت في كل مكان ==========
+(function() {
+
+  // 1. إصلاح الرقم المعكوس (dir="ltr")
+  function fixWhatsappNumber() {
+    // كل عنصر فيه رقم واتساب أو علامة +
+    const all = document.querySelectorAll('#profile-content, #me-content, #saved-page');
+    all.forEach(container => {
+      container.querySelectorAll('p, span, div, a').forEach(el => {
+        if (el.children.length === 0) {
+          const text = (el.textContent || '').trim();
+          if (text.startsWith('+') || /^\+\d+/.test(text) || /^\d{10,}/.test(text)) {
+            el.setAttribute('dir', 'ltr');
+            el.style.direction = 'ltr';
+            el.style.unicodeBidi = 'embed';
+          }
+        }
+      });
+    });
+  }
+
+  // 2. ربط كل الكروت في كل الصفحات بـ openDetail
+  function bindAllCards() {
+    const containers = document.querySelectorAll(
+      '#profile-content, #me-content, #saved-page, #explore-page, #ideas-grid'
+    );
+    
+    containers.forEach(container => {
+      container.querySelectorAll('.idea-card').forEach(card => {
+        // شيل الربط القديم
+        if (card.dataset.finalBound === 'true') return;
+        card.dataset.finalBound = 'true';
+        card.style.cursor = 'pointer';
+        
+        card.addEventListener('click', function(e) {
+          // متشتغلش لو الضغط على زر
+          if (e.target.closest('button') || e.target.closest('a')) return;
+          
+          const id = card.dataset.id;
+          if (id && typeof openDetail === 'function') {
+            openDetail(id);
+          }
+        });
+      });
+    });
+  }
+
+  // 3. تشغيل الدوال بعد كل فتح صفحة
+  function runFixes() {
+    fixWhatsappNumber();
+    bindAllCards();
+  }
+
+  // عند تحميل الصفحة
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(runFixes, 1000);
+    
+    // observer للشبكة الرئيسية
+    const grid = document.getElementById('ideas-grid');
+    if (grid) {
+      new MutationObserver(runFixes).observe(grid, { childList: true, subtree: true });
+    }
+  });
+
+  // بعد فتح البروفايل
+  const _origOpenProfile = window.openProfile;
+  if (typeof _origOpenProfile === 'function' && !_origOpenProfile._fixed) {
+    const fixed = function() {
+      _origOpenProfile.apply(this, arguments);
+      setTimeout(runFixes, 500);
+    };
+    fixed._fixed = true;
+    window.openProfile = fixed;
+  }
+
+  // بعد فتح المحفوظات
+  const _origOpenSaved = window.openSaved;
+  if (typeof _origOpenSaved === 'function' && !_origOpenSaved._fixed) {
+    const fixed = function() {
+      _origOpenSaved.apply(this, arguments);
+      setTimeout(runFixes, 400);
+    };
+    fixed._fixed = true;
+    window.openSaved = fixed;
+  }
+
+  // بعد فتح الاستكشاف
+  const _origOpenExplore = window.openExplore;
+  if (typeof _origOpenExplore === 'function' && !_origOpenExplore._fixed) {
+    const fixed = function() {
+      _origOpenExplore.apply(this, arguments);
+      setTimeout(runFixes, 400);
+    };
+    fixed._fixed = true;
+    window.openExplore = fixed;
+  }
+
+  // بعد فتح "أنا" (القديمة)
+  const _origOpenMe = window.openMe;
+  if (typeof _origOpenMe === 'function' && !_origOpenMe._fixed) {
+    const fixed = function() {
+      _origOpenMe.apply(this, arguments);
+      setTimeout(runFixes, 400);
+    };
+    fixed._fixed = true;
+    window.openMe = fixed;
+  }
+
+})();
+</script>
