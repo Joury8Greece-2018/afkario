@@ -1,4 +1,4 @@
-// ========== البروفايل الكامل — نسخة نهائية مصححة ==========
+// ========== البروفايل الكامل — نسخة نظيفة نهائية ==========
 (function() {
 
   const AVATARS = ['☕', '💡', '🤝', '❤️', '🧠', '🔥', '🌟', '😎', '🎯', '🚀', '💎', '🎨'];
@@ -119,7 +119,7 @@
       };
     }
 
-    // ⭐ التحسينات بعد الرسم مباشرة (المكان الصحيح)
+    // ⭐ التحسينات بعد الرسم مباشرة
     setTimeout(function() {
       if (typeof enhanceIdeaCards === 'function') enhanceIdeaCards();
       if (typeof enhanceWithActionBar === 'function') enhanceWithActionBar();
@@ -243,76 +243,9 @@
     document.body.style.overflow = '';
   }
 
-  // ============ 3. ربط الكروت بـ openDetail (بدون تعارض) ============
-  document.addEventListener('click', function(e) {
-    // تجاهل لو المستخدم ضغط على زر أو لينك
-    if (e.target.closest('button') || e.target.closest('a')) return;
-    
-    const card = e.target.closest('.idea-card');
-    if (!card) return;
-    
-    const id = card.dataset.id;
-    if (!id) return;
-    
-    if (typeof window.openDetail === 'function') {
-      // نستخدم preventDefault فقط، بدون stopPropagation عشان مانعطلش باقي الأزرار
-      window.openDetail(id);
-    }
-  });
+  // ============ 3. ربط الدوال بالـ window ============
+  window.openEditProfile = openEditProfilePage;
+  window.closeEditProfile = closeEditProfilePage;
+  window.renderProfileFull = renderProfileFull;
 
-  // ============ 4. override openProfile و openMe ============
-  document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(function() {
-      const origOpenProfile = window.openProfile;
-      if (typeof origOpenProfile === 'function') {
-        window.openProfile = function() {
-          origOpenProfile.apply(this, arguments);
-          setTimeout(renderProfileFull, 300);
-        };
-      }
-      
-      const origOpenMe = window.openMe;
-      if (typeof origOpenMe === 'function') {
-        window.openMe = function() {
-          origOpenMe.apply(this, arguments);
-          setTimeout(renderProfileFull, 300);
-        };
-      }
-      
-      setTimeout(function() {
-        const meBtn = document.querySelector('.bottom-nav button[data-page="me"]');
-        if (meBtn) {
-          const origHandler = meBtn.onclick;
-          meBtn.onclick = function(e) {
-            if (origHandler) origHandler.call(this, e);
-            setTimeout(renderProfileFull, 400);
-          };
-        }
-      }, 500);
-    }, 800);
-  });
-
-  // ============ 5. ربط الدوال بالـ window ============
-  // ✅ فتح الكرت عن طريق ربط مباشر (يعمل حتى لو openDetail مش على window)
-  document.addEventListener('click', function(e) {
-    if (e.target.closest('button') || e.target.closest('a')) return;
-    const card = e.target.closest('.idea-card');
-    if (!card) return;
-    const id = card.dataset.id;
-    if (!id) return;
-
-    // جرب كل الطرق الممكنة لفتح التفاصيل
-    if (typeof window.openDetail === 'function') {
-      window.openDetail(id);
-    } else if (typeof openDetail === 'function') {
-      openDetail(id);
-    } else if (typeof window.openIdeaDetail === 'function') {
-      window.openIdeaDetail(id);
-    } else if (typeof openIdeaDetail === 'function') {
-      openIdeaDetail(id);
-    } else if (typeof window.showDetail === 'function') {
-      window.showDetail(id);
-    } else if (typeof showDetail === 'function') {
-      showDetail(id);
-    }
-  });
+})();
