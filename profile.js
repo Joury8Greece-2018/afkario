@@ -293,13 +293,26 @@
   });
 
   // ============ 5. ربط الدوال بالـ window ============
-  window.openEditProfile = openEditProfilePage;
-  window.closeEditProfile = closeEditProfilePage;
-  window.renderProfileFull = renderProfileFull;
+  // ✅ فتح الكرت عن طريق ربط مباشر (يعمل حتى لو openDetail مش على window)
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('button') || e.target.closest('a')) return;
+    const card = e.target.closest('.idea-card');
+    if (!card) return;
+    const id = card.dataset.id;
+    if (!id) return;
 
-  // ✅ محاولة ربط openDetail من index.html (لو موجود)
-  if (typeof openDetail === 'function' && !window.openDetail) {
-    window.openDetail = openDetail;
-  }
-
-})();
+    // جرب كل الطرق الممكنة لفتح التفاصيل
+    if (typeof window.openDetail === 'function') {
+      window.openDetail(id);
+    } else if (typeof openDetail === 'function') {
+      openDetail(id);
+    } else if (typeof window.openIdeaDetail === 'function') {
+      window.openIdeaDetail(id);
+    } else if (typeof openIdeaDetail === 'function') {
+      openIdeaDetail(id);
+    } else if (typeof window.showDetail === 'function') {
+      window.showDetail(id);
+    } else if (typeof showDetail === 'function') {
+      showDetail(id);
+    }
+  });
