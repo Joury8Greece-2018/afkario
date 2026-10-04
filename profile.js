@@ -297,4 +297,9 @@
   window.closeEditProfile = closeEditProfilePage;
   window.renderProfileFull = renderProfileFull;
 
+  // ✅ محاولة ربط openDetail من index.html (لو موجود)
+  if (typeof openDetail === 'function' && !window.openDetail) {
+    window.openDetail = openDetail;
+  }
+
 })();
