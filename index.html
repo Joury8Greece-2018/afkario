@@ -2136,3 +2136,39 @@ if (typeof _origOpenMe2 === 'function') {
 
 })();
 </script>
+
+<script>
+// ========== إخفاء رقم الواتساب من البروفايل ==========
+(function() {
+
+  function hideWhatsappNumber() {
+    const containers = document.querySelectorAll('#profile-content, #me-content, #saved-page, #explore-page, #ideas-grid');
+    containers.forEach(container => {
+      container.querySelectorAll('p, span, div').forEach(el => {
+        if (el.children.length > 0) return;
+        const text = (el.textContent || '').trim();
+        // لو النص رقم واتساب (يبدأ بـ + أو 10 أرقام+)
+        if (/^\+?\d{10,}$/.test(text)) {
+          el.style.display = 'none';
+        }
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(hideWhatsappNumber, 1200);
+    
+    // إعادة التشغيل بعد فتح البروفايل
+    const _origOpen = window.openProfile;
+    if (typeof _origOpen === 'function' && !_origOpen._hid) {
+      const hid = function() {
+        _origOpen.apply(this, arguments);
+        setTimeout(hideWhatsappNumber, 500);
+      };
+      hid._hid = true;
+      window.openProfile = hid;
+    }
+  });
+
+})();
+</script>
