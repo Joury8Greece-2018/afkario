@@ -286,4 +286,11 @@
   window.closeEditProfile = closeEditProfilePage;
   window.renderProfileFull = renderProfileFull;
 
+
+  // تحسين كروت البروفايل بعد الرسم
+  setTimeout(function() {
+    if (typeof enhanceIdeaCards === 'function') enhanceIdeaCards();
+    if (typeof enhanceWithActionBar === 'function') enhanceWithActionBar();
+    if (typeof enhanceWithReposts === 'function') enhanceWithReposts();
+  }, 400);
 })();
