@@ -1,4 +1,4 @@
-// ========== البروفايل الكامل — تعديلات الدماغ ==========
+// ========== البروفايل الكامل — نسخة نهائية مصححة ==========
 (function() {
 
   const AVATARS = ['☕', '💡', '🤝', '❤️', '🧠', '🔥', '🌟', '😎', '🎯', '🚀', '💎', '🎨'];
@@ -119,12 +119,12 @@
       };
     }
 
-    // ⭐⭐⭐ هنا التحسينات — بعد رسم الكروت مباشرة ⭐⭐⭐
+    // ⭐ التحسينات بعد الرسم مباشرة (المكان الصحيح)
     setTimeout(function() {
       if (typeof enhanceIdeaCards === 'function') enhanceIdeaCards();
       if (typeof enhanceWithActionBar === 'function') enhanceWithActionBar();
       if (typeof enhanceWithReposts === 'function') enhanceWithReposts();
-    }, 50);
+    }, 80);
   }
 
   // ============ 2. صفحة تعديل البروفايل ============
@@ -243,19 +243,22 @@
     document.body.style.overflow = '';
   }
 
-  // ============ 3. ربط الكروت بـ openDetail (Event Delegation) ============
+  // ============ 3. ربط الكروت بـ openDetail (بدون تعارض) ============
   document.addEventListener('click', function(e) {
-    const card = e.target.closest('.idea-card');
-    if (!card) return;
+    // تجاهل لو المستخدم ضغط على زر أو لينك
     if (e.target.closest('button') || e.target.closest('a')) return;
     
+    const card = e.target.closest('.idea-card');
+    if (!card) return;
+    
     const id = card.dataset.id;
-    if (id && typeof openDetail === 'function') {
-      e.preventDefault();
-      e.stopPropagation();
-      openDetail(id);
+    if (!id) return;
+    
+    if (typeof window.openDetail === 'function') {
+      // نستخدم preventDefault فقط، بدون stopPropagation عشان مانعطلش باقي الأزرار
+      window.openDetail(id);
     }
-  }, true);
+  });
 
   // ============ 4. override openProfile و openMe ============
   document.addEventListener('DOMContentLoaded', function() {
@@ -285,30 +288,13 @@
             setTimeout(renderProfileFull, 400);
           };
         }
-      }, 500Profile);
+      }, 500);
     }, 800);
   });
 
+  // ============ 5. ربط الدوال بالـ window ============
   window.openEditProfile = openEditProfilePage;
-  window.closeEdit = closeEditProfilePage;
+  window.closeEditProfile = closeEditProfilePage;
   window.renderProfileFull = renderProfileFull;
-
-  // ❌ تم حذف الـ setTimeout القديم من هنا
-// ============ 5. إصلاح فتح الكروت في البروفايل (نسخة جديدة) ============
-  document.addEventListener('click', function(e) {
-    if (e.target.closest('button') || e.target.closest('a')) return;
-    
-    const card = e.target.closest('.idea-card');
-    if (!card) return;
-    
-    const id = card.dataset.id;
-    if (!id) return;
-    
-    if (typeof window.openDetail === 'function') {
-      e.preventDefault();
-      e.stopPropagation();
-      window.openDetail(id);
-    }
-  });
 
 })();
