@@ -1,21 +1,20 @@
 {
-  "name": "مقهى الأفكار",
-  "short_name": "afkario",
-  "description": "مقهى الأفكار - واحد + واحد = مليون",
-  "start_url": "./index.html",
-  "scope": "./",
+  "name": "مقهى الأفكار - v3",
+  "short_name": "أفكاريو",
+  "start_url": "/",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#FFFFFF",
+  "background_color": "#FAFAFA",
   "theme_color": "#4285F4",
-  "lang": "ar",
-  "dir": "rtl",
   "icons": [
     {
-      "src": "./icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ]
 }
