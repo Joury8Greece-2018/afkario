@@ -19,6 +19,7 @@
   a { text-decoration: none; color: var(--blue); }
   button { cursor: pointer; border: none; outline: none; }
 
+  /* الهيدر */
   .header { background: var(--white); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
   .logo { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 1.2rem; }
   .logo img { width: 35px; height: 35px; border-radius: 8px; }
@@ -26,9 +27,11 @@
 
   .container { max-width: 600px; margin: 0 auto; padding: 15px; }
   
+  /* شريط PWA */
   .pwa-banner { background: linear-gradient(135deg, var(--blue), #2b6fd9); color: white; padding: 12px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: bold; }
   .pwa-banner button { background: white; color: var(--blue); padding: 6px 12px; border-radius: 8px; font-weight: bold; }
 
+  /* الهيرو */
   .hero { text-align: center; margin: 20px 0 30px; }
   .hero h1 { font-size: 1.8rem; margin: 0 0 10px; line-height: 1.3; }
   .hero p { color: var(--text-mid); font-size: 1.1rem; margin: 0 0 15px; }
@@ -37,6 +40,7 @@
   .btn-main { background: var(--blue); color: white; padding: 15px 30px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; width: 100%; margin-bottom: 10px; display: block; text-align: center; }
   .btn-secondary { background: var(--white); color: var(--text); border: 1.5px solid var(--border); padding: 15px 30px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; width: 100%; display: block; text-align: center; }
 
+  /* شبكة الأفكار */
   .ideas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
   .idea-card { background: var(--white); border-radius: 14px; padding: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); display: flex; flex-direction: column; }
   .idea-card h3 { margin: 0 0 6px; font-size: 1rem; font-weight: 800; cursor: pointer; }
@@ -46,31 +50,38 @@
   .tag-need { background: #FFF3CD; color: #856404; }
   .tag-loc { background: #EDE9FE; color: #5B21B6; }
   
+  /* الإيموجي */
   .reactions-bar { display: flex; justify-content: space-between; border-top: 1px dashed var(--border); padding-top: 8px; margin-bottom: 8px; }
   .react-btn { background: none; font-size: 0.85rem; font-weight: bold; color: var(--text-mid); padding: 4px; }
   .react-btn:active { background: #FFF3CD; border-radius: 6px; }
   
+  /* أزرار الكارت */
   .card-actions { display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 8px; margin-top: auto; }
   .action-btn { background: none; color: var(--text-soft); font-size: 0.75rem; font-weight: bold; padding: 5px; display: flex; align-items: center; gap: 4px; }
 
+  /* الشريط السفلي */
   .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0; z-index: 10; }
   .bottom-nav button { display: flex; flex-direction: column; align-items: center; font-size: 0.75rem; font-weight: bold; color: var(--text-soft); background: none; }
   .bottom-nav button.active { color: var(--blue); }
   .bottom-nav .ic { font-size: 1.3rem; margin-bottom: 4px; }
 
+  /* النوافذ */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; display: flex; align-items: flex-end; justify-content: center; }
   .modal-content { background: var(--white); width: 100%; max-width: 600px; border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 24px 20px; max-height: 90vh; overflow-y: auto; }
   .modal-close { float: left; background: var(--bg-soft); width: 35px; height: 35px; border-radius: 50%; font-weight: bold; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
   .modal-content h2 { margin: 0 0 15px; font-size: 1.4rem; }
   
+  /* الحقول */
   .form-group { margin-bottom: 15px; }
   .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
   .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 1rem; font-family: inherit; }
   
+  /* الواتساب */
   .wa-group { display: flex; gap: 10px; }
   .wa-group select { width: 140px; padding: 12px 5px; }
   .wa-group input { flex-grow: 1; direction: ltr; text-align: left; }
   
+  /* شبكة الإيموجي */
   .avatar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 15px; }
   .avatar-opt { background: var(--bg-soft); border: 2px solid transparent; font-size: 1.5rem; padding: 8px 0; border-radius: 10px; text-align: center; }
   .avatar-opt.selected { border-color: var(--blue); background: #E3F2FD; }
@@ -102,7 +113,7 @@
     <h1>عندك فكرة؟<br>ما تسيبهاش في دماغك.</h1>
     <p id="motivation-text">فكرتك ببلاش… ونشرها بـ9 جنيه.</p>
     <span class="badge-gradient">واحد + واحد = مليون</span>
-    <button class="btn-main" onclick="openTrial()" id="trial-btn">🎁 جرب 28 يوم مجاناً</button>
+    <button class="btn-main" onclick="openPlans()" id="trial-btn">🎁 جرب 28 يوم مجاناً</button>
     <button class="btn-secondary" onclick="openAddIdea()">💡 اكتب فكرتك</button>
     <button class="btn-secondary" onclick="openNoIdea()" style="margin-top:10px; border-style:dashed;">🤔 معندكش فكرة؟</button>
   </div>
@@ -132,7 +143,6 @@ const STORAGE_TRIAL = 'afkario_trial_end';
 const STORAGE_REACTIONS = 'afkario_reactions_v6';
 const AVATARS = ['☕', '💡', '🤝', '❤️', '🧠', '🔥', '🌟', '😎', '🎯', '🚀', '💎', '🎨'];
 
-// أشهر الدول (مختصرة لأهم الدول)
 const COUNTRY_CODES = [
   { code: '+20', name: 'مصر 🇪🇬' }, { code: '+966', name: 'السعودية 🇸🇦' }, { code: '+971', name: 'الإمارات 🇦🇪' },
   { code: '+965', name: 'الكويت 🇰🇼' }, { code: '+974', name: 'قطر 🇶🇦' }, { code: '+973', name: 'البحرين 🇧🇭' },
@@ -145,7 +155,6 @@ const COUNTRY_CODES = [
   { code: '+7', name: 'روسيا 🇷🇺' }, { code: '+86', name: 'الصين 🇨🇳' }, { code: '+91', name: 'الهند 🇮🇳' }
 ];
 
-// أفكار الإدارة (أفكاريو)
 const ADMIN_IDEAS = [
   "💡 تطبيق يربط أصحاب السيارات بورش تصليح قريبة منهم.",
   "💡 فكرة مزرعة سمكية صغيرة على السطح.",
@@ -180,17 +189,18 @@ function showToast(msg) {
 // ==========================================
 function renderAdminIdeas() {
   const list = document.getElementById('admin-ideas-list');
-  list.innerHTML = ADMIN_IDEAS.map(idea => `<div style="padding:5px 0; border-bottom:1px solid #ddd;">${idea}</div>`).join('');
+  if(list) list.innerHTML = ADMIN_IDEAS.map(idea => `<div style="padding:5px 0; border-bottom:1px solid #ddd;">${idea}</div>`).join('');
 }
 
 function renderProfileHeader() {
   const profile = getProfile();
   const btn = document.getElementById('header-profile-btn');
-  btn.innerHTML = profile.name ? (profile.avatar || '👤') + ' ' + profile.name : '👤 حسابي';
+  if(btn) btn.innerHTML = profile.name ? (profile.avatar || '👤') + ' ' + profile.name : '👤 حسابي';
 }
 
 function renderIdeas() {
   const grid = document.getElementById('ideas-grid');
+  if(!grid) return;
   const ideas = getIdeas();
   const allReactions = getReactions();
   
@@ -314,15 +324,15 @@ function openAddIdea() {
         <input type="url" id="f-video" placeholder="https://tiktok.com/..." dir="ltr" style="text-align:left;">
       </div>
       
-      <button class="btn-main" onclick="saveIdea()">نشر الفكرة</button>
-    </div>
+      <button class="btn-main" onclick ?="saveIdea()">نشر الفكرة</button>
+    ' </div>
   `;
-  document.body.appendChild(modal);
+ selected document.body.appendChild(modal);
 }
 
 function saveIdea() {
-  const title = document.getElementById('f-title').value.trim();
-  const desc = document.getElementById('f-desc').value.trim();
+'  const title = document.getElementById('f-title').value :.trim();
+  const desc = document.getElementById('f ''-desc').value.trim();
   const need = document.getElementById('f-need').value;
   const loc = document.getElementById('f-loc').value.trim();
   const email = document.getElementById('f-email').value.trim();
@@ -345,6 +355,10 @@ function saveIdea() {
   renderIdeas();
 }
 
+function openNoIdea() {
+  showToast('💡 فكر في مشكلة بتقابلك كل يوم وحاول تحلها!');
+}
+
 // ==========================================
 // 5. البروفايل (حفظ - حذف - إشعارات)
 // ==========================================
@@ -353,7 +367,7 @@ function openProfile() {
   const selectedAvatar = profile.avatar || '☕';
   
   let avatarsHtml = AVATARS.map(emoji => 
-    `<button class="avatar-opt ${emoji === selectedAvatar ? 'selected' : ''}" onclick="selectAvatar(this, '${emoji}')">${emoji}</button>`
+    `<button class="avatar-opt ${emoji === selectedAvatar}" onclick="selectAvatar(this, '${emoji}')">${emoji}</button>`
   ).join('');
 
   let codesHtml = COUNTRY_CODES.map(c => 
@@ -440,8 +454,8 @@ function deleteAccount() {
 function toggleNotifications() {
   const current = localStorage.getItem('afkario_notif') !== 'false';
   localStorage.setItem('afkario_notif', (!current).toString());
+  
   if(!current) {
-    // طلب إذن الإشعارات الحقيقي
     if ("Notification" in window) {
       Notification.requestPermission().then(permission => {
         if (permission === "granted") {
@@ -450,6 +464,7 @@ function toggleNotifications() {
       });
     }
   }
+  
   showToast(!current ? '🔔 تم تفعيل الإشعارات' : '🔕 تم تعطيل الإشعارات');
   document.querySelector('.modal-overlay').remove();
   openProfile();
@@ -467,7 +482,7 @@ function checkTrialStatus() {
   return `<span style="color:green;">✅ مشترك (متبقي ${daysLeft} يوم)</span>`;
 }
 
-function openTrial() {
+function openPlans() {
   const modal = document.createElement('div'); modal.className = 'modal-overlay';
   modal.innerHTML = `
     <div class="modal-content">
@@ -476,4 +491,19 @@ function openTrial() {
       
       <div style="border:2px solid var(--green); border-radius:12px; padding:15px; text-align:center; margin-bottom:15px;">
         <h3 style="margin:0 0 10px; color:var(--green);">تجربة مجانية</h3>
-        <p style="font-size:2rem; font-weight:bold; margin:0 0 10px;">0 <span style="font-size:1rem;">جنيه</span></p
+        <p style="font-size:2rem; font-weight:bold; margin:0 0 10px;">0 <span style="font-size:1rem;">جنيه</span></p>
+        <p style="font-size:0.9rem; color:var(--text-mid); margin-bottom:15px;">لمدة 28 يوم</p>
+        <button class="btn-main" style="background:var(--green);" onclick="activatePlan(28)">ابدأ التجربة</button>
+      </div>
+
+      <div style="border:1px solid var(--border); border-radius:12px; padding:15px; text-align:center; margin-bottom:15px;">
+        <h3 style="margin:0 0 10px;">الباقة الشهرية</h3>
+        <p style="font-size:2rem; font-weight:bold; margin:0 0 10px;">9 <span style="font-size:1rem;">جنيه</span></p>
+        <p style="font-size:0.9rem; color:var(--text-mid); margin-bottom:15px;">لمدة 28 يوم</p>
+        <button class="btn-main" onclick="activatePlan(28)">اشترك الآن</button>
+      </div>
+
+      <div style="border:1px solid var(--border); border-radius:12px; padding:15px; text-align:center; margin-bottom:15px;">
+        <h3 style="margin:0 0 10px;">الباقة السنوية</h3>
+        <p style="font-size:2rem; font-weight:bold; margin:0 0 10px;">79 <span style="font-size:1rem;">جنيه</span></p>
+        <p style="font-size:0.9rem; color:var(--text-mid); margin-bottom:15px;">لمدة 360 يوم</
